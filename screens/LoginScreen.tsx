@@ -37,7 +37,7 @@ const LoginScreen = ({ navigation }) => {
         enableAutomaticScroll={(Platform.OS === 'ios')}
         style={{backgroundColor: "#fff"}}>
             <View style={styles.container}>
-            <Image style={styles.mainImage} source={ require('../assets/icon/key-login.png') } />
+                <Image style={styles.mainImage} source={ require('../assets/icon/key-login.png') } />
 
                 <Text style={styles.mainText}>ĐĂNG NHẬP</Text>
                 <View style={styles.content}>
@@ -52,9 +52,17 @@ const LoginScreen = ({ navigation }) => {
                     
                 </View>
                 <View style={styles.buttons}>
-                <TouchableOpacity style={styles.button} onPress={onLogInPressed}>
-                    <Text style={styles.signUpLabel}>ĐĂNG NHẬP</Text>
-                </TouchableOpacity >
+                    <TouchableOpacity style={styles.button} onPress={onLogInPressed}>
+                        <Text style={styles.logInLabel}>ĐĂNG NHẬP</Text>
+                    </TouchableOpacity >
+                </View>
+                <View style={styles.another}>
+                <Text style={styles.another}> Chưa có tài khoản?</Text>
+                <TouchableOpacity onPress={ () => {
+                    navigation.navigate("RegisterScreen")
+                }}>
+                    <Text style={styles.signUpLabel} >Đăng ký ngay</Text>
+                </TouchableOpacity>
             </View>
             </View>
             </KeyboardAwareScrollView>
@@ -109,7 +117,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         borderRadius: 5,
     },
-    signUpLabel: {
+    logInLabel: {
         color: "#fff",
         fontWeight: "700",
         fontSize: 16
@@ -118,10 +126,11 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         fontSize: 17
     },
-    loginLabel: {
-        color: "#fff",
-        fontWeight: "700",
-        fontSize: 16
+    signUpLabel: {
+        color: "#746bf9",
+        marginLeft: 5,
+        fontSize: 17,
+        fontWeight:"700"
     },
 
 })
