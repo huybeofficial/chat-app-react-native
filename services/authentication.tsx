@@ -8,11 +8,11 @@ interface RegisterBody {
 }
 
 interface LoginBody {
-    email: string
+    username: string
     password: string
 }
 
-export const registerApi = ({ username, email, password } : RegisterBody) => {
+export const registerApi = ({ username, password, email } : RegisterBody) => {
     const registerRequest = axios({
         method: "POST",
         url: registerUrl,
@@ -24,11 +24,11 @@ export const registerApi = ({ username, email, password } : RegisterBody) => {
     return registerRequest
 }
 
-export const loginApi = ({ email, password }: LoginBody) => {
+export const loginApi = ({ username, password }: LoginBody) => {
     const loginRequest = axios({
         method: "POST",
         url: loginUrl,
-        data: { email, password },
+        data: { username, password },
         headers: { 
             'Content-Type': 'application/json'
         }
