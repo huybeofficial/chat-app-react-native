@@ -6,7 +6,7 @@ import { loginApi } from '../services/authentication'
 
 import { useForm } from 'react-hook-form';
 
-const LoginScreen = ({ navigation }) => { 
+const LoginScreen = ({ navigation }) => {
     const [ username, setUsername ] = useState<string>("")
     const [ password, setPassword ] = useState<string>("")
    
@@ -20,7 +20,7 @@ const LoginScreen = ({ navigation }) => {
         //         alert(`${error.response.data.code} : ${error.response.data.message}`)
         //     }
         // }
-        
+                
         loginApi({
             username, password
         }).then(response => {
