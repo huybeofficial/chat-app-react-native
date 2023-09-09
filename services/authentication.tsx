@@ -1,5 +1,5 @@
 import axios from "axios"
-import { loginUrl, registerUrl } from "./api"
+import { registerUrl, loginUrl } from "./api"
 
 interface RegisterBody { 
     username: string
