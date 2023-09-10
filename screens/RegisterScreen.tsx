@@ -1,37 +1,39 @@
-import { useEffect, useState } from "react"
-import { SafeAreaView , View, StyleSheet, Text, TextInput, TouchableOpacity, Platform, ScrollView, KeyboardAvoidingView } from "react-native"
+import React, { useState } from "react"
+import {Image, SafeAreaView , View, StyleSheet, Text, TextInput, TouchableOpacity, Platform, ScrollView, KeyboardAvoidingView } from "react-native"
 import axios from "axios"
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { registerApi } from '../services/authentication'
+import { loginApi } from '../services/authentication'
 import { Formik } from 'formik';
 import * as Yup from 'yup';
+import Ionicons from '@expo/vector-icons/Ionicons'
+
 
 
 
 const RegisterScreen = ({ navigation }) => { 
 
     const validation = Yup.object().shape({
-        username: Yup.string().min(5, 'Tên người dùng phải chứa ít nhất 5 ký tự').required('Vui lòng nhập tên người dùng'),
+        name: Yup.string().required('Vui lòng nhập tên của bạn'),
         email: Yup.string().email('Địa chỉ email không hợp lệ').required('Vui lòng nhập địa chỉ email'),
         password: Yup.string().min(6, 'Mật khẩu phải chứa ít nhất 6 ký tự').required('Vui lòng nhập mật khẩu'),
         confirmedPassword: Yup.string().oneOf([Yup.ref('password'), null], 'Mật khẩu không khớp').required('Vui lòng nhập lại mật khẩu'),
     })
     
-    // const [ username, setUsername ] = useState<string>("")
+    // const [ name, setname ] = useState<string>("")
     // const [ email, setEmail] = useState<string>("")
     // const [ password, setPassword ] = useState<string>("")
     // const [ confirmedPassword, setConfirmedPassword ] = useState<string>("")
     
-    // const [usernameError, setUsernameError] = useState(true)
+    // const [nameError, setnameError] = useState(true)
     // const [emailError, setEmailError] = useState(true)
     // const [passwordError, setPasswordError] = useState(true)
     
-    // const verify = (username) => {
-    //     const usernameFormat = /^[a-zA-Z\-]+$/
-    //     if(usernameFormat.test(username)){
+    // const verify = (name) => {
+    //     const nameFormat = /^[a-zA-Z\-]+$/
+    //     if(nameFormat.test(name)){
     //         return true
     //     }
-    //     if (!username){
+    //     if (!name){
     //         return false
     //     }
     // }
@@ -54,7 +56,7 @@ const RegisterScreen = ({ navigation }) => {
         
     //     try {
     //         const response = await registerApi({
-    //                 username, 
+    //                 name, 
     //                 email, 
     //                 password  
     //             })
@@ -70,14 +72,15 @@ const RegisterScreen = ({ navigation }) => {
             enableAutomaticScroll={(Platform.OS === 'ios')} 
             style={{backgroundColor: "#fff"}}>
             <View style = {styles.container}>
-                <Text style={styles.mainText} >ĐĂNG KÝ</Text>
-                <Text style={styles.descriptText} >
-                    Tạo tài khoản để trò chuyện với bạn bè của bạn
-                </Text>
+                <Image style={styles.mainImage} source={ require('../assets/icon/chat.png') } />
+                <View style={styles.textHeader}>
+                    <Text style={styles.mainText} >Chào mừng trở lại,</Text>
+                    <Text style={styles.descriptText} > Đăng ký để tiếp tục </Text>
+                </View>
                 
                 <Formik 
                 initialValues={{
-                    username: '',
+                    name: '',
                     email: '',
                     password: '',
                     confirmedPassword: '',
@@ -86,7 +89,7 @@ const RegisterScreen = ({ navigation }) => {
                 onSubmit={ async (values) => {
                     try {
                         const response = await registerApi({
-                            username: values.username,
+                            name: values.name,
                             password: values.password,
                             email: values.email
                         })
@@ -99,51 +102,58 @@ const RegisterScreen = ({ navigation }) => {
                 >
                 {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
                     <View style={styles.content}>
-                        <TextInput
-                        value={values.username}
-                        onChangeText={handleChange('username')}
-                        onBlur={handleBlur('username')}
-                        placeholder="Tên người dùng"
-                        style={styles.input}
-                        />
-                        {touched.username && errors.username && (
-                        <Text style={styles.error}>{errors.username}</Text>
-                        )}
+                            <View style={styles.inputContainer} >
+                                <Ionicons name="person-outline" size={20} color="gray" style={styles.inputIcon} />
+                                <TextInput
+                                value={values.name}
+                                onChangeText={handleChange('name')}
+                                onBlur={handleBlur('name')}
+                                placeholder="Tên"
+                                style={styles.input}
+                                />
+                            </View>
+                                {touched.name && errors.name && (
+                                <Text style={styles.error}>{errors.name}</Text>
+                                )}
 
-                        <TextInput
-                        value={values.email}
-                        onChangeText={handleChange('email')}
-                        onBlur={handleBlur('email')}
-                        placeholder="Địa chỉ email"
-                        style={styles.input}
-                        />
-                        {touched.email && errors.email && (
-                        <Text style={styles.error}>{errors.email}</Text>
-                        )}
+                            <View style={styles.inputContainer} >
+                                <Ionicons name="mail-outline" size={20} color="gray" style={styles.inputIcon} />
+                                <TextInput value={values.email} onChangeText={handleChange('email')}
+                                onBlur={handleBlur('email')}
+                                placeholder="Nhập địa chỉ Email"
+                                style={styles.input}
+                                />
+                            </View>
+                                {touched.email && errors.email && (
+                                <Text style={styles.error}>{errors.email}</Text>
+                                )}
+                        
 
-                        <TextInput
-                        value={values.password}
-                        onChangeText={handleChange('password')}
-                        onBlur={handleBlur('password')}
-                        placeholder="Nhập mật khẩu"
-                        style={styles.input}
-                        secureTextEntry
-                        />
-                        {touched.password && errors.password && (
-                        <Text style={styles.error}>{errors.password}</Text>
-                        )}
-
-                        <TextInput
-                        value={values.confirmedPassword}
-                        onChangeText={handleChange('confirmedPassword')}
-                        onBlur={handleBlur('confirmedPassword')}
-                        placeholder="Nhập lại mật khẩu"
-                        style={styles.input}
-                        secureTextEntry
-                        />
-                        {touched.confirmedPassword && errors.confirmedPassword && (
-                        <Text style={styles.error}>{errors.confirmedPassword}</Text>
-                        )}
+                            <View style={styles.inputContainer} >
+                                <Ionicons name="lock-closed" size={20} color="gray" style={styles.inputIcon} />
+                                <TextInput value={values.password} onChangeText={handleChange('password')}
+                                onBlur={handleBlur('password')}
+                                placeholder="Nhập mật khẩu"
+                                style={styles.input}
+                                />
+                            </View>
+                                    {touched.password && errors.password && (
+                                    <Text style={styles.error}>{errors.password}</Text>
+                                    )}
+                            <View style={styles.inputContainer} >
+                                <Ionicons name="lock-closed" size={20} color="gray" style={styles.inputIcon} />
+                                <TextInput
+                                value={values.confirmedPassword}
+                                onChangeText={handleChange('confirmedPassword')}
+                                onBlur={handleBlur('confirmedPassword')}
+                                placeholder="Nhập lại mật khẩu"
+                                style={styles.input}
+                                secureTextEntry
+                                />
+                            </View>
+                                {touched.confirmedPassword && errors.confirmedPassword && (
+                                <Text style={styles.error}>{errors.confirmedPassword}</Text>
+                                )}
                         <View style={styles.buttons}>
                             <TouchableOpacity
                             style={styles.button}
@@ -152,10 +162,15 @@ const RegisterScreen = ({ navigation }) => {
                             <Text style={styles.signUpLabel}>ĐĂNG KÝ</Text>
                             </TouchableOpacity>
                         </View>
+                        {/* <View style={{marginVertical:15, flexDirection:"row", justifyContent: "center",alignItems:"center"}}>
+                            <View style={styles.line}></View>
+                            <Text style={{marginHorizontal: 5, fontWeight:"bold"}}>KHÁC</Text>
+                            <View style={styles.line}></View>
+                        </View> */}
                         <View style={styles.another}>
                             <Text style={styles.another}> Đã có tài khoản?</Text>
                             <TouchableOpacity onPress={ () => {
-                                navigation.navigate("LoginScreen")
+                                navigation.replace("LoginScreen")
                             }}>
                                 <Text style={styles.loginLabel} >Đăng nhập</Text>
                             </TouchableOpacity>
@@ -171,43 +186,56 @@ const RegisterScreen = ({ navigation }) => {
 
 
 const styles = StyleSheet.create({
-    container: {        
-        marginTop: 20,
+    mainImage: {
+        width:70,
+        height:70,
+    },
+    container: {
         flex: 1,
+        margin:5,
         backgroundColor: "#fff",
-        alignItems: "center",
+        alignItems: "flex-start",
         padding: 20
     },
+    textHeader:{
+        marginVertical:40
+    },
     mainText: {
-        fontSize: 35,
-        fontWeight: "900"
+        fontSize: 25,
+        fontWeight: "bold"
     },
     descriptText: {
-        textAlign: "center",
-        fontSize: 20,
-        marginVertical: 10
+       // textAlign: "center",
+        fontSize: 15,
+        color: "#94979c",
+        fontWeight:"bold"
     },
- 
     content: {
-        alignItems: "flex-end",
-        width: "100%"
+       alignItems: "flex-end",
+        width: "100%",
+    },
+    inputContainer:{
+        marginTop: 10,
+        flexDirection:"row"
     },
     input: {
-        borderWidth: 0.7,
-        borderColor: "#999999",
-        padding: 10,
-        borderRadius: 5,
+        // borderWidth: 0.7,
+        borderBottomWidth: 0.7,
+        borderBottomColor: "gray",
         width: "100%",
-        marginTop: 20,
-        backgroundColor:"#f3f4fb"
+        marginVertical: 15,
+        paddingLeft: 30,
+       flexDirection: "column"
     },
-    label: {
-        marginVertical: 10
+    inputIcon:{
+        marginTop:18,
+        position: "absolute"
     },
     buttons: {
-        backgroundColor: "#746bf9",
-        marginVertical: 20,
-        padding: 15,
+        
+        backgroundColor: "#2196f3",
+        marginTop: 20,
+        padding: 12,
         width:"100%",
         borderRadius: 5
     },
@@ -221,19 +249,26 @@ const styles = StyleSheet.create({
         fontWeight: "700",
         fontSize: 16
     },
+    line:{
+        height:1,
+        width:30,
+        backgroundColor : "#adb1b8"
+    },
     another:{
+        marginTop: 5,
         flexDirection: "row",
         fontSize: 17
     },
     loginLabel: {
-        color: "#746bf9",
-        marginLeft: 5,
+        margin: 5,
+        color: "red",
         fontSize: 17,
-        fontWeight:"700"
+        fontWeight:"bold"
     },
     error: {
-    color:"red",
-    alignItems: "flex-start"
-    },
+        color: "red",
+        
+    }
+
 })
 export default RegisterScreen

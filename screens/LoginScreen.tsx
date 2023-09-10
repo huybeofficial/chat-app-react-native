@@ -5,10 +5,12 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { loginApi } from '../services/authentication'
 import { Formik } from 'formik';
 import * as Yup from 'yup';
+import Ionicons from '@expo/vector-icons/Ionicons'
 import { useForm } from 'react-hook-form';
 
 const LoginScreen = ({ navigation }) => {
     const [ username, setUsername ] = useState<string>("")
+    const [ email, setEmail ] = useState<string>("")
     const [ password, setPassword ] = useState<string>("")
    
 
@@ -35,7 +37,8 @@ const LoginScreen = ({ navigation }) => {
     // }
 
     const validation = Yup.object().shape({
-        username: Yup.string().min(5, 'Tên người dùng phải chứa ít nhất 5 ký tự').required('Vui lòng nhập tên người dùng'),
+      //  username: Yup.string().min(5, 'Tên người dùng phải chứa ít nhất 5 ký tự').required('Vui lòng nhập tên người dùng'),
+        email: Yup.string().email('Địa chỉ email không hợp lệ').required('Vui lòng nhập địa chỉ email'),
         password: Yup.string().min(6, 'Mật khẩu phải chứa ít nhất 6 ký tự').required('Vui lòng nhập mật khẩu'),
                 
     })
@@ -46,20 +49,22 @@ const LoginScreen = ({ navigation }) => {
         enableAutomaticScroll={(Platform.OS === 'ios')}
         style={{backgroundColor: "#fff"}}>
             <View style={styles.container}>
-                <Image style={styles.mainImage} source={ require('../assets/icon/key-login.png') } />
-
-                <Text style={styles.mainText}>ĐĂNG NHẬP</Text>
-
+                <Image style={styles.mainImage} source={ require('../assets/icon/chat.png') } />
+                
+                <View style={styles.textHeader}>
+                    <Text style={styles.mainText}>Chào mừng trở lại,</Text>
+                    <Text style= {styles.descriptText} > Đăng nhập để tiếp tục </Text>
+                </View>
                 <Formik 
                 initialValues={{
-                    username: '',
+                    email: '',
                     password: ''
                 }}
                 validationSchema={validation}
                 onSubmit={ async (values) => {
                     try {
                         const response = await loginApi({
-                            username: values.username,
+                            email: values.email,
                             password: values.password,
                         })
                         navigation.navigate("HomePageScreen")
@@ -73,37 +78,46 @@ const LoginScreen = ({ navigation }) => {
 
                     
                     <View style={styles.content}>
-                
-                        <TextInput value={values.username} onChangeText={handleChange('username')}
-                            onBlur={handleBlur('username')}
-                            placeholder="Tên người dùng"
-                            style={styles.input}
-                            />
-                            {touched.username && errors.username && (
-                            <Text style={styles.error}>{errors.username}</Text>
-                        )}
+                            <View style={styles.inputContainer} >
+                                <Ionicons name="mail-outline" size={20} color="gray" style={styles.inputIcon} />
+                                <TextInput value={values.email} onChangeText={handleChange('email')}
+                                onBlur={handleBlur('email')}
+                                placeholder="Nhập địa chỉ Email"
+                                style={styles.input}
+                                />
+                            </View>
+                                {touched.email && errors.email && (
+                                <Text style={styles.error}>{errors.email}</Text>
+                                )}
+                        
 
-                        <TextInput
-                            value={values.password}
-                            onChangeText={handleChange('password')}
-                            onBlur={handleBlur('password')}
-                            placeholder="Nhập mật khẩu"
-                            style={styles.input}
-                            secureTextEntry
-                            />
-                            {touched.password && errors.password && (
-                            <Text style={styles.error}>{errors.password}</Text>
-                        )}
+                            <View style={styles.inputContainer} >
+                                <Ionicons name="lock-closed" size={20} color="gray" style={styles.inputIcon} />
+                                <TextInput value={values.password} onChangeText={handleChange('password')}
+                                onBlur={handleBlur('password')}
+                                placeholder="Nhập mật khẩu"
+                                style={styles.input}
+                                />
+                            </View>
+                                    {touched.password && errors.password && (
+                                    <Text style={styles.error}>{errors.password}</Text>
+                                    )}
 
                         <View style={styles.buttons}>
                             <TouchableOpacity style={styles.button} onPress={handleSubmit}>
                                 <Text style={styles.logInLabel}>ĐĂNG NHẬP</Text>
                             </TouchableOpacity >
                         </View>
+
+                        {/* <View style={{marginVertical:15, flexDirection:"row", justifyContent: "center",alignItems:"center"}}>
+                            <View style={styles.line}></View>
+                            <Text style={{marginHorizontal: 5, fontWeight:"bold"}}>KHÁC</Text>
+                            <View style={styles.line}></View>
+                        </View> */}
                         <View style={styles.another}>
-                        <Text style={styles.another}> Chưa có tài khoản?</Text>
+                        <Text style={styles.another}> Bạn chưa có tài khoản?</Text>
                         <TouchableOpacity onPress={ () => {
-                            navigation.navigate("RegisterScreen")
+                            navigation.replace("RegisterScreen")
                         }}>
                             <Text style={styles.signUpLabel} >Đăng ký ngay</Text>
                         </TouchableOpacity>
@@ -117,47 +131,55 @@ const LoginScreen = ({ navigation }) => {
 }
 const styles = StyleSheet.create({
     mainImage: {
-
-        width:150,
-        height:150,
+        width:70,
+        height:70,
     },
     container: {
         flex: 1,
-        marginTop:20,
+        margin:5,
         backgroundColor: "#fff",
-        alignItems: "center",
+        alignItems: "flex-start",
         padding: 20
     },
+    textHeader:{
+        marginVertical:40
+    },
     mainText: {
-        marginVertical: 15,
-        fontSize: 35,
-        fontWeight: "900"
+        fontSize: 25,
+        fontWeight: "bold"
     },
     descriptText: {
-        textAlign: "center",
-        fontSize: 20,
-        paddingVertical: 15
+       // textAlign: "center",
+        fontSize: 15,
+        color: "#94979c",
+        fontWeight:"bold"
     },
     content: {
-        alignItems: "flex-end",
-        width: "100%"
+       alignItems: "flex-end",
+        width: "100%",
+    },
+    inputContainer:{
+        marginTop: 10,
+        flexDirection:"row"
     },
     input: {
-        borderWidth: 0.7,
-        borderColor: "#999999",
-        padding: 10,
-        borderRadius: 5,
+        // borderWidth: 0.7,
+        borderBottomWidth: 0.7,
+        borderBottomColor: "gray",
         width: "100%",
-        marginTop: 20,
-        backgroundColor:"#f3f4fb"
+        marginVertical: 15,
+        paddingLeft: 30,
+       flexDirection: "column"
     },
-    label: {
-        marginVertical: 10
+    inputIcon:{
+        marginTop:18,
+        position: "absolute"
     },
     buttons: {
-        backgroundColor: "#746bf9",
-        marginVertical: 20,
-        padding: 15,
+        
+        backgroundColor: "#2196f3",
+        marginTop: 20,
+        padding: 12,
         width:"100%",
         borderRadius: 5
     },
@@ -171,19 +193,25 @@ const styles = StyleSheet.create({
         fontWeight: "700",
         fontSize: 16
     },
+    line:{
+        height:1,
+        width:30,
+        backgroundColor : "#adb1b8"
+    },
     another:{
+        marginTop: 5,
         flexDirection: "row",
         fontSize: 17
     },
     signUpLabel: {
-        color: "#746bf9",
-        marginLeft: 5,
+        margin: 5,
+        color: "red",
         fontSize: 17,
-        fontWeight:"700"
+        fontWeight:"bold"
     },
     error: {
         color: "red",
-        marginLeft:12
+        
     }
 
 })

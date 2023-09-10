@@ -2,21 +2,21 @@ import axios from "axios"
 import { registerUrl, loginUrl } from "./api"
 
 interface RegisterBody { 
-    username: string
+    name: string
     email: string
     password: string
 }
 
 interface LoginBody {
-    username: string
+    email: string
     password: string
 }
 
-export const registerApi = ({ username, password, email } : RegisterBody) => {
+export const registerApi = ({ name, password, email } : RegisterBody) => {
     const registerRequest = axios({
         method: "POST",
         url: registerUrl,
-        data: { username, email, password },
+        data: { name, email, password },
         headers: { 
             'Content-Type': 'application/json'
         },
@@ -24,11 +24,11 @@ export const registerApi = ({ username, password, email } : RegisterBody) => {
     return registerRequest
 }
 
-export const loginApi = ({ username, password }: LoginBody) => {
+export const loginApi = ({ email, password }: LoginBody) => {
     const loginRequest = axios({
         method: "POST",
         url: loginUrl,
-        data: { username, password },
+        data: { email, password },
         headers: { 
             'Content-Type': 'application/json'
         }
