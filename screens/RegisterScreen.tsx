@@ -171,21 +171,21 @@ const RegisterScreen = ({ navigation }) => {
 
 
 const styles = StyleSheet.create({
-    container: {
+    container: {        
+        marginTop: 20,
         flex: 1,
         backgroundColor: "#fff",
         alignItems: "center",
         padding: 20
     },
     mainText: {
-        marginTop: 20,
         fontSize: 35,
         fontWeight: "900"
     },
     descriptText: {
         textAlign: "center",
         fontSize: 20,
-        paddingVertical: 15
+        marginVertical: 10
     },
  
     content: {

@@ -117,11 +117,13 @@ const LoginScreen = ({ navigation }) => {
 }
 const styles = StyleSheet.create({
     mainImage: {
+
         width:150,
         height:150,
     },
     container: {
         flex: 1,
+        marginTop:20,
         backgroundColor: "#fff",
         alignItems: "center",
         padding: 20
