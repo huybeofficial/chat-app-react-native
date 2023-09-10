@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import {Image, SafeAreaView , View, StyleSheet, Text, TextInput, TouchableOpacity, Platform, ScrollView, KeyboardAvoidingView } from "react-native"
 import axios from "axios"
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { loginApi } from '../services/authentication'
+import { registerApi } from '../services/authentication'
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import Ionicons from '@expo/vector-icons/Ionicons'
