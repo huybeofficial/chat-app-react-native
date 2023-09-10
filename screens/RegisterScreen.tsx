@@ -72,7 +72,7 @@ const RegisterScreen = ({ navigation }) => {
             enableAutomaticScroll={(Platform.OS === 'ios')} 
             style={{backgroundColor: "#fff"}}>
             <View style = {styles.container}>
-                <Image style={styles.mainImage} source={ require('../assets/icon/chat.png') } />
+                <Image style={styles.mainImage} source={ require('../assets/img/chat.png') } />
                 <View style={styles.textHeader}>
                     <Text style={styles.mainText} >Chào mừng trở lại,</Text>
                     <Text style={styles.descriptText} > Đăng ký để tiếp tục </Text>
@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
         width: "100%",
     },
     inputContainer:{
-        marginTop: 10,
+        marginTop: 15,
         flexDirection:"row"
     },
     input: {
@@ -223,18 +223,18 @@ const styles = StyleSheet.create({
         borderBottomWidth: 0.7,
         borderBottomColor: "gray",
         width: "100%",
-        marginVertical: 15,
+        marginVertical: 5,
         paddingLeft: 30,
        flexDirection: "column"
     },
     inputIcon:{
-        marginTop:18,
+        marginTop: 10,
         position: "absolute"
     },
     buttons: {
         
         backgroundColor: "#2196f3",
-        marginTop: 20,
+        marginTop: 30,
         padding: 12,
         width:"100%",
         borderRadius: 5
@@ -249,18 +249,13 @@ const styles = StyleSheet.create({
         fontWeight: "700",
         fontSize: 16
     },
-    line:{
-        height:1,
-        width:30,
-        backgroundColor : "#adb1b8"
-    },
     another:{
-        marginTop: 5,
+        marginTop: 10,
         flexDirection: "row",
         fontSize: 17
     },
     loginLabel: {
-        margin: 5,
+        margin: 10,
         color: "red",
         fontSize: 17,
         fontWeight:"bold"

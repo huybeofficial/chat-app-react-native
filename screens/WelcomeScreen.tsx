@@ -8,7 +8,7 @@ import { createStackNavigator } from 'react-navigation-stack';
 const WelcomeScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
-      <Image style={styles.mainImage} source={ require('../assets/icon/chat.png') } />
+      <Image style={styles.mainImage} source={ require('../assets/img/chat.png') } />
     
       <TouchableOpacity onPress={() => {
         navigation.navigate("LoginScreen")

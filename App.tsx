@@ -18,7 +18,7 @@ const StackNavigator = createStackNavigator({
     screen: RegisterScreen
   }
 }, {
-  initialRouteName: "WelcomeScreen"
+  initialRouteName: "LoginScreen"
 })
 
  
