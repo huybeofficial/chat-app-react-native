@@ -103,7 +103,7 @@ const RegisterScreen = ({ navigation }) => {
                 {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
                     <View style={styles.content}>
                             <View style={styles.inputContainer} >
-                                <Ionicons name="person-outline" size={20} color="gray" style={styles.inputIcon} />
+                                <Ionicons name="person-outline" size={20} color="#64b5f6" style={styles.inputIcon} />
                                 <TextInput
                                 value={values.name}
                                 onChangeText={handleChange('name')}
@@ -117,7 +117,7 @@ const RegisterScreen = ({ navigation }) => {
                                 )}
 
                             <View style={styles.inputContainer} >
-                                <Ionicons name="mail-outline" size={20} color="gray" style={styles.inputIcon} />
+                                <Ionicons name="mail-outline" size={20} color="#64b5f6" style={styles.inputIcon} />
                                 <TextInput value={values.email} onChangeText={handleChange('email')}
                                 onBlur={handleBlur('email')}
                                 placeholder="Nhập địa chỉ Email"
@@ -130,7 +130,7 @@ const RegisterScreen = ({ navigation }) => {
                         
 
                             <View style={styles.inputContainer} >
-                                <Ionicons name="lock-closed" size={20} color="gray" style={styles.inputIcon} />
+                                <Ionicons name="lock-closed" size={20} color="#64b5f6" style={styles.inputIcon} />
                                 <TextInput value={values.password} onChangeText={handleChange('password')}
                                 onBlur={handleBlur('password')}
                                 placeholder="Nhập mật khẩu"
@@ -141,7 +141,7 @@ const RegisterScreen = ({ navigation }) => {
                                     <Text style={styles.error}>{errors.password}</Text>
                                     )}
                             <View style={styles.inputContainer} >
-                                <Ionicons name="lock-closed" size={20} color="gray" style={styles.inputIcon} />
+                                <Ionicons name="lock-closed" size={20} color="#64b5f6" style={styles.inputIcon} />
                                 <TextInput
                                 value={values.confirmedPassword}
                                 onChangeText={handleChange('confirmedPassword')}
@@ -219,9 +219,8 @@ const styles = StyleSheet.create({
         flexDirection:"row"
     },
     input: {
-        // borderWidth: 0.7,
-        borderBottomWidth: 0.7,
-        borderBottomColor: "gray",
+        borderBottomWidth: 1,
+        borderBottomColor: "#94979c",
         width: "100%",
         marginVertical: 5,
         paddingLeft: 30,
