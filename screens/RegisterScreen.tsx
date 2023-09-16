@@ -43,49 +43,16 @@ const RegisterScreen = ({ navigation }) => {
                 email,
                 password
             })
-            // const { data } = signupResponse
-            //         // alert("Đăng nhập thành công!")
-            //         //Lưu token lại
-            //         const result = await setAccessToken(data?.tokens?.access?.token)
-            //         if (result) {
-            //             alert("Đăng nhập thành công!")
-            //             const accessToken = await getAccessToken()
-            //             console.log(accessToken)
-            //         } else {
-            //             alert("Lỗi khi đăng nhập: Không thể lưu accesstoken")
-            //         }
-            navigation.navigate("LoginScreen")
+            const { data } = signupResponse
+            alert("Đăng ký thành công!")
+            setTimeout(() => {
+                navigation.replace("LoginScreen")
+            }, 3000)
         } catch (err) {
             const { data } = err.response
-            alert(data.message)
+            alert("Email đã tồn tại!")
         }
     }
-    // const onLoginPressed = async () => {
-    //     if (!validateEmail(email)) {
-    //         alert("Email không hợp lệ!")
-    //     }
-    //     try {
-    //         const loginResponse = await loginApi({
-    //             email,
-    //             password
-    //         })
-    //         const { data } = loginResponse
-    //         // alert("Đăng nhập thành công!")
-    //         //Lưu token lại
-    //         const result = await setAccessToken(data?.tokens?.access?.token)
-    //         if (result) {
-    //             alert("Đăng nhập thành công!")
-    //             const accessToken = await getAccessToken()
-    //             console.log(accessToken)
-    //         } else {
-    //             alert("Lỗi khi đăng nhập: Không thể lưu accesstoken")
-    //         }
-    //     } catch (err) {
-    //         const { data } = err.response
-    //         alert(data.message)
-    //     }
-    // }
-
     return (
         <KeyboardAwareScrollView
             enableOnAndroid={true}
