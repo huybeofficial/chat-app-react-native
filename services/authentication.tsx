@@ -1,8 +1,9 @@
 import axios from "axios"
+import * as SecureStore from 'expo-secure-store'
 import { registerUrl, loginUrl } from "./api"
 
-interface RegisterBody { 
-    name: string
+interface RegisterBody {
+    username: string
     email: string
     password: string
 }
@@ -12,12 +13,12 @@ interface LoginBody {
     password: string
 }
 
-export const registerApi = ({ name, password, email } : RegisterBody) => {
+export const registerApi = ({ username, password, email }: RegisterBody) => {
     const registerRequest = axios({
         method: "POST",
         url: registerUrl,
-        data: { name, email, password },
-        headers: { 
+        data: { username, email, password },
+        headers: {
             'Content-Type': 'application/json'
         },
     })
@@ -25,15 +26,49 @@ export const registerApi = ({ name, password, email } : RegisterBody) => {
 }
 
 export const loginApi = ({ email, password }: LoginBody) => {
-    const loginRequest = axios({
+    return axios({
         method: "POST",
-        url: loginUrl,
-        data: { email, password },
-        headers: { 
-            'Content-Type': 'application/json'
+        url: BASE_URL.concat("/auth/login"),
+        data: {
+            email,
+            password
         }
     })
-    return loginRequest
 }
 
+export const setAccessToken = async (accessToken: string) => {
+    if (!accessToken) {
+        return false
+    }
+    try {
+        await SecureStore.setItemAsync('accessToken', accessToken)
+        addTokenToAxios(accessToken)
+        return true
+    } catch (error) {
+        console.log("Lỗi khi lưu token", error)
+    }
+    return false
+}
+
+export const getAccessToken = async () => {
+    try {
+        const accessToken = await SecureStore.getItemAsync('accessToken')
+        return accessToken
+    } catch (error) {
+        console.log("Lỗi khi lưu token", error)
+    }
+    return false
+}
+
+export const addTokenToAxios = (accessToken: string) => {
+    axios.interceptors.request.use(function (config) {
+        // Do something before request is sent
+        config.headers.Authorization = `Bearer ${accessToken}`
+        // config.headers.Authorization = `123456789`
+        return config;
+    }, function (error) {
+        // Do something with request error
+        return Promise.reject(error);
+    })
+}
 
