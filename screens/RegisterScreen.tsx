@@ -94,7 +94,7 @@ const RegisterScreen = ({ navigation }) => {
                             email: values.email
                         })
                         navigation.navigate("LoginScreen")
-                    }catch (error) {
+                    }catch (error: any) {
                         const responseData = error.response.data
                         alert(responseData.message)
                     }

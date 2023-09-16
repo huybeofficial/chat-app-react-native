@@ -1,18 +1,64 @@
-import React, { useState } from "react"
+import React, {useEffect,useState } from "react"
 import {Image, SafeAreaView , View, StyleSheet, Text, TextInput, TouchableOpacity, Platform, ScrollView, KeyboardAvoidingView } from "react-native"
 import axios from "axios"
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { loginApi } from '../services/authentication'
+import { addTokenToAxios, getAccessToken, loginApi, setAccessToken } from '../services/authentication'
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { useForm } from 'react-hook-form';
+import { validateEmail } from "../utils/validate"
+
+
 
 const LoginScreen = ({ navigation }) => {
     const [ username, setUsername ] = useState<string>("")
     const [ email, setEmail ] = useState<string>("")
     const [ password, setPassword ] = useState<string>("")
    
+    const checkAuthenticated = async() => {
+        //Check đăng nhập
+        try {
+           const accessToken = await getAccessToken()
+           if(accessToken) {
+               addTokenToAxios(accessToken)
+               navigation.navigate("HomeScreen")
+           }
+       } catch(error) {
+           console.log(error)
+       }
+   }
+
+   useEffect(() => {
+       checkAuthenticated()
+   }, [])
+
+
+   const login = async () => {
+       if(!validateEmail(email)) {
+           alert("Email không hợp lệ!")
+       }
+       try {
+           const loginResponse = await loginApi({
+               email,
+               password
+           })
+           const {data} = loginResponse
+           // alert("Đăng nhập thành công!")
+           //Lưu token lại
+           const result = await setAccessToken(data?.tokens?.access?.token)
+           if(result) {
+               alert("Đăng nhập thành công!")
+               const accessToken = await getAccessToken()
+               console.log(accessToken)
+           }else {
+               alert("Lỗi khi đăng nhập: Không thể lưu accesstoken")
+           }
+       } catch(err :any) {
+           const {data} = err.response
+           alert(data.message)
+       }
+   }
 
     // const onLogInPressed = async () => {
     //     // try {
@@ -68,7 +114,7 @@ const LoginScreen = ({ navigation }) => {
                             password: values.password,
                         })
                         navigation.navigate("HomePageScreen")
-                    }catch (error) {
+                    }catch (error: any) {
                         const responseData = error.response.data
                         alert(responseData.message)
                     }
