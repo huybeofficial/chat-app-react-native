@@ -3,43 +3,57 @@ import { Image, View, StyleSheet, Text, TextInput, TouchableOpacity, Platform, }
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { addTokenToAxios, getAccessToken, loginApi, setAccessToken } from "../services/authentication"
+import { validateEmail } from "../utils/validate";
 
 const LoginScreen = ({ navigation }) => {
     const [email, setEmail] = useState<string>("")
     const [password, setPassword] = useState<string>("")
 
+    const [emailError, setEmailError] = useState("");
+    const [passwordError, setPasswordError] = useState("");
 
-    const validateEmail = (email) => {
-        const mailFormat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
-        if (mailFormat.test(email)) {
-            return true
+    const handleBlurEmail = () => {
+        if (!email) {
+            setEmailError("Vui lòng nhập địa chỉ email.");
+        } else if (!validateEmail(email)) {
+            setEmailError("Địa chỉ email không hợp lệ.");
+        } else {
+            setEmailError("");
         }
-        return false
-    }
+    };
+
+    const handleBlurPassword = () => {
+        if (!password) {
+            setPasswordError("Vui lòng nhập mật khẩu.");
+        } else {
+            setPasswordError("");
+        }
+    };
 
     const onLoginPressed = async () => {
-        if (!validateEmail(email)) {
-            alert("Email không hợp lệ!")
-        }
-        try {
-            const loginResponse = await loginApi({
-                email,
-                password
-            })
-            const { data } = loginResponse
-            // alert("Đăng nhập thành công!")
-            //Lưu token lại
-            const result = await setAccessToken(data?.tokens?.access?.token)
-            if (result) {
-                alert("Đăng nhập thành công!")
-                const accessToken = await getAccessToken()
-                console.log(accessToken)
-            } else {
-                alert("Lỗi khi đăng nhập: Không thể lưu accesstoken")
+        if (validateEmail(email) && password) {
+            try {
+                const loginResponse = await loginApi({
+                    email,
+                    password
+                })
+                const { data } = loginResponse
+                // alert("Đăng nhập thành công!")
+                //Lưu token lại
+                const result = await setAccessToken(data?.tokens?.access?.token)
+                if (result) {
+                    alert("Đăng nhập thành công!")
+                    const accessToken = await getAccessToken()
+                    console.log(accessToken)
+                } else {
+                    alert("Lỗi khi đăng nhập: Không thể lưu accesstoken")
+                }
+            } catch (err) {
+                const { data } = err.response
+                alert(data.message)
             }
-        } catch (err) {
-            const { data } = err.response
-            alert(data.message)
+        } else {
+            alert("Vui lòng nhập đầy đủ thông tin!")
         }
     }
 
@@ -49,34 +63,41 @@ const LoginScreen = ({ navigation }) => {
             enableAutomaticScroll={(Platform.OS === 'ios')}
             style={{ backgroundColor: "#fff" }}>
             <View style={styles.container}>
-                <Image style={styles.mainImage} source={require('../assets/img/chat.png')} />
-
-                <View style={styles.textHeader}>
+                <View style={styles.header}>
+                    <Image style={styles.mainImage} source={require('../assets/img/chat.png')} />
                     <Text style={styles.mainText}>Xin chào,</Text>
                     <Text style={styles.descriptText} > Đăng nhập để tiếp tục </Text>
                 </View>
 
                 <View style={styles.content}>
-                    <View style={styles.inputContainer} >
-                        <Ionicons name="mail-outline" size={20} color="#6ce31e" style={styles.inputIcon} />
-                        <TextInput value={email} onChangeText={(value) => {
-                            setEmail(value)
-                        }}
-                            placeholder="Nhập địa chỉ Email"
-                            style={styles.input}
-                        />
-                    </View>
 
                     <View style={styles.inputContainer} >
-                        <Ionicons name="lock-closed-outline" size={20} color="#6ce31e" style={styles.inputIcon} />
-                        <TextInput value={password} onChangeText={(value) => {
-                            setPassword(value)
-                        }}
-                            secureTextEntry
-                            placeholder="Nhập mật khẩu"
+                        <Ionicons name="mail-outline" size={20} color="#6ce31e" style={styles.inputIcon} />
+                        <TextInput value={email}
+                            keyboardType="email-address"
+                            placeholder="Nhập địa chỉ Email"
                             style={styles.input}
+                            onChangeText={(value) => {
+                                setEmail(value)
+                            }}
+                            onBlur={handleBlurEmail}
                         />
                     </View>
+                    {emailError ? <Text style={styles.error}>{emailError}</Text> : null}
+
+                    <View style={styles.inputContainer} >
+                        <Ionicons name="lock-closed" size={20} color="#6ce31e" style={styles.inputIcon} />
+                        <TextInput value={password}
+                            placeholder="Nhập mật khẩu"
+                            style={styles.input}
+                            secureTextEntry
+                            onChangeText={(value) => {
+                                setPassword(value)
+                            }}
+                            onBlur={handleBlurPassword}
+                        />
+                    </View>
+                    {passwordError ? <Text style={styles.error}>{passwordError}</Text> : null}
                 </View>
                 <View style={{ alignItems: "flex-end" }}>
                     <View style={styles.buttons}>
@@ -109,8 +130,8 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         padding: 20
     },
-    textHeader: {
-        marginVertical: 40
+    header: {
+        marginBottom: 30
     },
     mainText: {
         fontSize: 35,
@@ -124,7 +145,7 @@ const styles = StyleSheet.create({
     },
     content: {
         marginVertical: 10,
-        alignItems: "center",
+        alignItems: "flex-end",
         width: "100%",
     },
     inputContainer: {

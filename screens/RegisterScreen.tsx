@@ -6,53 +6,78 @@ import { registerApi } from '../services/authentication'
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import Ionicons from '@expo/vector-icons/Ionicons'
+import { validateEmail } from "../utils/validate";
 
 
 
 const RegisterScreen = ({ navigation }) => {
-
 
     const [username, setUsername] = useState("")
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [confirmedPassword, setConfirmedPassword] = useState("")
 
-    // const [usernameError, setUsernameError] = useState(true)
-    // const [emailError, setEmailError] = useState(true)
-    // const [passwordError, setPasswordError] = useState(true)
+    const [usernameError, setUsernameError] = useState("");
+    const [emailError, setEmailError] = useState("");
+    const [passwordError, setPasswordError] = useState("");
+    const [confirmedPasswordError, setConfirmedPasswordError] = useState("");
 
-    const validateEmail = (email) => {
-        const mailFormat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
-        if (mailFormat.test(email)) {
-            return true
+    const handleBlurUsername = () => {
+        if (!username) {
+            setUsernameError("Vui lòng nhập tên người dùng.");
+        } else {
+            setUsernameError("");
         }
-        return false
-    }
+    };
+
+    const handleBlurEmail = () => {
+        if (!email) {
+            setEmailError("Vui lòng nhập địa chỉ email.");
+        } else if (!validateEmail(email)) {
+            setEmailError("Địa chỉ email không hợp lệ.");
+        } else {
+            setEmailError("");
+        }
+    };
+
+    const handleBlurPassword = () => {
+        if (!password) {
+            setPasswordError("Vui lòng nhập mật khẩu.");
+        } else {
+            setPasswordError("");
+        }
+    };
+
+    const handleBlurConfirmedPassword = () => {
+        if (!confirmedPassword) {
+            setConfirmedPasswordError("Vui lòng xác nhận mật khẩu.");
+        } else if (password !== confirmedPassword) {
+            setConfirmedPasswordError("Mật khẩu xác nhận không khớp.");
+        } else {
+            setConfirmedPasswordError("");
+        }
+    };
     const onSignUpPressed = async () => {
-        if (!validateEmail(email)) {
-            alert("Email không hợp lệ!")
+        if (username && validateEmail(email) && password && password === confirmedPassword) {
+            try {
+                const signupResponse = await registerApi({
+                    username,
+                    email,
+                    password
+                })
+                const { data } = signupResponse
+                alert("Đăng ký thành công!")
+                setTimeout(() => {
+                    navigation.replace("LoginScreen")
+                }, 3000)
+            } catch (err) {
+                const { data } = err.response
+                alert("Email đã tồn tại!")
+            }
+        } else {
+            alert("Vui lòng nhập đầy đủ thông tin!")
         }
-        if (password !== confirmedPassword && confirmedPassword) {
-            alert("Mật khẩu không khớp!")
-            return
-        }
-
-        try {
-            const signupResponse = await registerApi({
-                username,
-                email,
-                password
-            })
-            const { data } = signupResponse
-            alert("Đăng ký thành công!")
-            setTimeout(() => {
-                navigation.replace("LoginScreen")
-            }, 3000)
-        } catch (err) {
-            const { data } = err.response
-            alert("Email đã tồn tại!")
-        }
-    }
+    };
     return (
         <KeyboardAwareScrollView
             enableOnAndroid={true}
@@ -60,15 +85,14 @@ const RegisterScreen = ({ navigation }) => {
             style={{ backgroundColor: "#fff" }}>
 
             <View style={styles.container}>
-                <Image style={styles.mainImage} source={require('../assets/img/chat.png')} />
-                <View style={styles.textHeader}>
+                <View style={styles.header}>
+                    <Image style={styles.mainImage} source={require('../assets/img/chat.png')} />
                     <Text style={styles.mainText}>Xin chào,</Text>
                     <Text style={styles.descriptText} > Đăng ký để tiếp tục </Text>
                 </View>
 
 
                 <View style={styles.content}>
-
                     <View style={styles.inputContainer} >
                         <Ionicons name="person-outline" size={20} color="#6ce31e" style={styles.inputIcon} />
                         <TextInput value={username}
@@ -77,20 +101,24 @@ const RegisterScreen = ({ navigation }) => {
                             onChangeText={(value) => {
                                 setUsername(value)
                             }}
+                            onBlur={handleBlurUsername}
                         />
                     </View>
+                    {usernameError ? <Text style={styles.error}>{usernameError}</Text> : null}
+
                     <View style={styles.inputContainer} >
                         <Ionicons name="mail-outline" size={20} color="#6ce31e" style={styles.inputIcon} />
                         <TextInput value={email}
+                            keyboardType="email-address"
                             placeholder="Nhập địa chỉ Email"
                             style={styles.input}
                             onChangeText={(value) => {
                                 setEmail(value)
                             }}
+                            onBlur={handleBlurEmail}
                         />
                     </View>
-
-
+                    {emailError ? <Text style={styles.error}>{emailError}</Text> : null}
 
                     <View style={styles.inputContainer} >
                         <Ionicons name="lock-closed" size={20} color="#6ce31e" style={styles.inputIcon} />
@@ -101,8 +129,11 @@ const RegisterScreen = ({ navigation }) => {
                             onChangeText={(value) => {
                                 setPassword(value)
                             }}
+                            onBlur={handleBlurPassword}
                         />
                     </View>
+                    {passwordError ? <Text style={styles.error}>{passwordError}</Text> : null}
+
 
                     <View style={styles.inputContainer} >
                         <Ionicons name="lock-closed" size={20} color="#6ce31e" style={styles.inputIcon} />
@@ -114,8 +145,11 @@ const RegisterScreen = ({ navigation }) => {
                             onChangeText={(value) => {
                                 setConfirmedPassword(value)
                             }}
+                            onBlur={handleBlurConfirmedPassword}
                         />
                     </View>
+                    {confirmedPasswordError ? <Text style={styles.error}>{confirmedPasswordError}</Text> : null}
+
                 </View>
                 <View style={{ alignItems: "flex-end" }}>
                     <View style={styles.buttons}>
@@ -153,8 +187,8 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         padding: 20
     },
-    textHeader: {
-        marginVertical: 40
+    header: {
+        marginBottom: 30
     },
     mainText: {
         fontSize: 35,
@@ -168,11 +202,11 @@ const styles = StyleSheet.create({
     },
     content: {
         marginVertical: 10,
-        alignItems: "center",
+        alignItems: "flex-end",
         width: "100%",
     },
     inputContainer: {
-        marginTop: 15,
+        marginTop: 10,
         flexDirection: "row"
     },
     input: {
@@ -218,7 +252,7 @@ const styles = StyleSheet.create({
     },
     error: {
         color: "red",
-
+        marginBottom: 10
     }
 
 })
