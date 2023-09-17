@@ -9,14 +9,17 @@ const LoginScreen = ({ navigation }) => {
     const [email, setEmail] = useState<string>("")
     const [password, setPassword] = useState<string>("")
 
-    const [emailError, setEmailError] = useState("");
-    const [passwordError, setPasswordError] = useState("");
+    const [emailError, setEmailError] = useState("")
+    const [passwordError, setPasswordError] = useState("")
+
+    const [showPassword, setShowPassword] = useState(false)
+    const [visible, setVisible] = useState(true)
 
     const handleBlurEmail = () => {
         if (!email) {
-            setEmailError("Vui lòng nhập địa chỉ email.");
+            setEmailError("Vui lòng nhập địa chỉ email.")
         } else if (!validateEmail(email)) {
-            setEmailError("Địa chỉ email không hợp lệ.");
+            setEmailError("Địa chỉ email không hợp lệ.")
         } else {
             setEmailError("");
         }
@@ -24,7 +27,7 @@ const LoginScreen = ({ navigation }) => {
 
     const handleBlurPassword = () => {
         if (!password) {
-            setPasswordError("Vui lòng nhập mật khẩu.");
+            setPasswordError("Vui lòng nhập mật khẩu.")
         } else {
             setPasswordError("");
         }
@@ -90,12 +93,18 @@ const LoginScreen = ({ navigation }) => {
                         <TextInput value={password}
                             placeholder="Nhập mật khẩu"
                             style={styles.input}
-                            secureTextEntry
+                            secureTextEntry={visible}
                             onChangeText={(value) => {
                                 setPassword(value)
                             }}
                             onBlur={handleBlurPassword}
                         />
+                        <TouchableOpacity onPress={() => {
+                            setVisible(!visible)
+                            setShowPassword(!showPassword)
+                        }}>
+                            <Ionicons name={showPassword === false ? "eye-off-outline" : "eye-outline"} size={25} color="#000" style={{ position: "absolute", right: 5, paddingTop: 5 }} />
+                        </TouchableOpacity>
                     </View>
                     {passwordError ? <Text style={styles.error}>{passwordError}</Text> : null}
                 </View>
@@ -150,11 +159,11 @@ const styles = StyleSheet.create({
     },
     inputContainer: {
         marginTop: 15,
-        flexDirection: "row"
-    },
-    input: {
+        flexDirection: "row",
         borderBottomWidth: 1,
         borderBottomColor: "gray",
+    },
+    input: {
         width: "100%",
         marginVertical: 5,
         paddingLeft: 30,

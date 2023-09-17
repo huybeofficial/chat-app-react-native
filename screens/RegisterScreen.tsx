@@ -22,6 +22,13 @@ const RegisterScreen = ({ navigation }) => {
     const [passwordError, setPasswordError] = useState("");
     const [confirmedPasswordError, setConfirmedPasswordError] = useState("");
 
+
+    const [showPassword, setShowPassword] = useState(false)
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+
+    const [visible, setVisible] = useState(true)
+    const [visible1, setVisible1] = useState(true)
+
     const handleBlurUsername = () => {
         if (!username) {
             setUsernameError("Vui lòng nhập tên người dùng.");
@@ -125,12 +132,18 @@ const RegisterScreen = ({ navigation }) => {
                         <TextInput value={password}
                             placeholder="Nhập mật khẩu"
                             style={styles.input}
-                            secureTextEntry
+                            secureTextEntry={visible}
                             onChangeText={(value) => {
                                 setPassword(value)
                             }}
                             onBlur={handleBlurPassword}
                         />
+                        <TouchableOpacity onPress={() => {
+                            setVisible(!visible)
+                            setShowPassword(!showPassword)
+                        }}>
+                            <Ionicons name={showPassword === false ? "eye-off-outline" : "eye-outline"} size={25} color="#000" style={{ position: "absolute", right: 5, paddingTop: 5 }} />
+                        </TouchableOpacity>
                     </View>
                     {passwordError ? <Text style={styles.error}>{passwordError}</Text> : null}
 
@@ -141,12 +154,18 @@ const RegisterScreen = ({ navigation }) => {
                             value={confirmedPassword}
                             placeholder="Nhập lại mật khẩu"
                             style={styles.input}
-                            secureTextEntry
+                            secureTextEntry={visible1}
                             onChangeText={(value) => {
                                 setConfirmedPassword(value)
                             }}
                             onBlur={handleBlurConfirmedPassword}
                         />
+                        <TouchableOpacity onPress={() => {
+                            setVisible1(!visible1)
+                            setShowConfirmPassword(!showConfirmPassword)
+                        }}>
+                            <Ionicons name={showConfirmPassword === false ? "eye-off-outline" : "eye-outline"} size={25} color="#000" style={{ position: "absolute", right: 5, paddingTop: 5 }} />
+                        </TouchableOpacity>
                     </View>
                     {confirmedPasswordError ? <Text style={styles.error}>{confirmedPasswordError}</Text> : null}
 
@@ -207,11 +226,11 @@ const styles = StyleSheet.create({
     },
     inputContainer: {
         marginTop: 10,
-        flexDirection: "row"
-    },
-    input: {
+        flexDirection: "row",
         borderBottomWidth: 1,
         borderBottomColor: "gray",
+    },
+    input: {
         width: "100%",
         marginVertical: 5,
         paddingLeft: 30,
