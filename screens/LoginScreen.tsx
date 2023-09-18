@@ -37,10 +37,11 @@ const LoginScreen = ({ navigation }) => {
         if (validateEmail(email) && password) {
             try {
                 const loginResponse = await loginApi({
-                    email,
-                    password
+                    "email": email,
+                    "password": password
                 })
                 const { data } = loginResponse
+                console.log("------------------------", data)
                 // alert("Đăng nhập thành công!")
                 //Lưu token lại
                 const result = await setAccessToken(data?.tokens?.access?.token)

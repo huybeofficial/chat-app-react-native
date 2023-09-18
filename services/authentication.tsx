@@ -28,7 +28,7 @@ export const registerApi = ({ username, password, email }: RegisterBody) => {
 export const loginApi = ({ email, password }: LoginBody) => {
     return axios({
         method: "POST",
-        url: BASE_URL.concat("/auth/login"),
+        url: "https://realtime-message-app-backend.vercel.app/api/login",
         data: {
             email,
             password
