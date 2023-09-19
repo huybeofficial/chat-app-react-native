@@ -1,9 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Image, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, Image, ActivityIndicator } from 'react-native';
 import { useState, useEffect } from 'react'
-import { createAppContainer } from 'react-navigation';
-import { createStackNavigator } from 'react-navigation-stack';
-import { addTokenToAxios, getAccessToken, loginApi, setAccessToken } from "../services/authentication"
+
+import { addTokenToAxios, getAccessToken, } from "../services/authentication"
 
 const StartScreen = ({ navigation }) => {
 
@@ -15,6 +14,7 @@ const StartScreen = ({ navigation }) => {
             if (accessToken) {
                 addTokenToAxios(accessToken)
                 navigation.navigate("HomeScreen")
+                console.log(accessToken)
             }
         } catch (error) {
             console.log(error)
@@ -22,10 +22,11 @@ const StartScreen = ({ navigation }) => {
     }
 
     useEffect(() => {
-        checkAuthenticated()
         setTimeout(() => {
-            navigation.replace("LoginScreen")
-        }, 3000)
+            if (!checkAuthenticated()) {
+                navigation.replace("LoginScreen")
+            }
+        }, 2000)
 
     }, [])
 

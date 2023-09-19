@@ -1,69 +1,29 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
-import  { useState } from 'react'
-import { createAppContainer } from 'react-navigation';
-import { createStackNavigator } from 'react-navigation-stack';
+import React from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
+import { ToastProvider, useToast } from 'react-native-toast-message';
 
+const AppWithToast = () => {
+  const { show } = useToast();
 
-const WelcomeScreen = ({ navigation }) => {
+  const showToast = () => {
+    show({
+      type: 'success',
+      position: 'bottom',
+      text1: 'Hello',
+      text2: 'This is a toast message',
+      visibilityTime: 2000, // 2 seconds
+    });
+  };
+
   return (
-    <View style={styles.container}>
-      <Image style={styles.mainImage} source={ require('../assets/img/chat.png') } />
-    
-      <TouchableOpacity onPress={() => {
-        navigation.navigate("LoginScreen")
-      }} style={styles.button}>
-      <View>
-        <Text style={styles.loginLabel}>ĐĂNG NHẬP</Text>
-      </View>
-      </TouchableOpacity>
-    
-      <TouchableOpacity onPress={() => {
-        navigation.navigate("RegisterScreen")
-      }} style={styles.button}>
-        <Text style={styles.loginLabel}>ĐĂNG KÝ</Text>
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <TouchableOpacity onPress={showToast}>
+        <Text>Show Toast</Text>
       </TouchableOpacity>
     </View>
   );
-}
+};
 
-const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor:"#fff",
-      justifyContent: "center",
-      alignItems: "center",
-      paddingHorizontal: 25
-    },
-    mainImage: {
-      bottom:20,
-      width:200,
-      height:200,
-      marginBottom: 15
-    },
-    mainText: {
-      fontSize: 22,
-      fontWeight: "900",
-      marginVertical: 20,
-      color: "#5f1ad0"
-    },
-    subText: {
-      fontSize: 15,
-      marginBottom: 15,
-      textAlign: "center"
-    },
-    button: {
-      width: "100%",
-      alignItems: "center",
-      backgroundColor: "#746bf9",
-      padding: 15,
-      borderRadius: 5,
-      margin: 10
-  },
-    loginLabel: {
-      color: "#fff",
-      fontSize: 16,
-      fontWeight: "700"
-    }
-})
-export default WelcomeScreen;
+
+
+export default AppWithToast;

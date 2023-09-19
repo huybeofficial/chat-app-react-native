@@ -4,19 +4,27 @@ import RegisterScreen from './screens/RegisterScreen'
 import LoginScreen from './screens/LoginScreen'
 import StartScreen from './screens/StartScreen';
 import WelcomeScreen from './screens/WelcomeScreen';
+import HomeScreen from './screens/HomeScreen';
 
 const StackNavigator = createStackNavigator({
   StartScreen: {
-    screen: StartScreen
+    screen: StartScreen,
   },
   LoginScreen: {
     screen: LoginScreen
   },
   RegisterScreen: {
     screen: RegisterScreen
-  }
+  },
+  WelcomeScreen: {
+    screen: WelcomeScreen
+  },
+  HomeScreen: {
+    screen: HomeScreen
+  },
 }, {
-  initialRouteName: "StartScreen"
+  initialRouteName: "WelcomeScreen",
+  defaultNavigationOptions: { headerShown: false },
 })
 
 

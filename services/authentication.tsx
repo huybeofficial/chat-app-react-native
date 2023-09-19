@@ -1,6 +1,6 @@
 import axios from "axios"
 import * as SecureStore from 'expo-secure-store'
-import { registerUrl, loginUrl } from "./api"
+import { registerUrl, loginUrl, logoutUrl } from "./api"
 
 interface RegisterBody {
     username: string
@@ -9,6 +9,10 @@ interface RegisterBody {
 }
 
 interface LoginBody {
+    email: string
+    password: string
+}
+interface LogoutBody {
     email: string
     password: string
 }
@@ -28,11 +32,21 @@ export const registerApi = ({ username, password, email }: RegisterBody) => {
 export const loginApi = ({ email, password }: LoginBody) => {
     return axios({
         method: "POST",
-        url: "https://realtime-message-app-backend.vercel.app/api/login",
-        data: {
-            email,
-            password
-        }
+        url: loginUrl,
+        data: { email, password },
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    })
+}
+export const logoutApi = ({ email, password }: LogoutBody) => {
+    return axios({
+        method: "POST",
+        url: logoutUrl,
+        data: { email, password },
+        headers: {
+            'Content-Type': 'application/json'
+        },
     })
 }
 
@@ -62,13 +76,41 @@ export const getAccessToken = async () => {
 
 export const addTokenToAxios = (accessToken: string) => {
     axios.interceptors.request.use(function (config) {
-        // Do something before request is sent
+
         config.headers.Authorization = `Bearer ${accessToken}`
-        // config.headers.Authorization = `123456789`
         return config;
     }, function (error) {
         // Do something with request error
         return Promise.reject(error);
     })
+    axios.interceptors.response.use(function (response) {
+        // Do something with response data
+        return response
+    }, function (error) {
+        // Do something with response error
+        return Promise.reject(error);
+    })
 }
 
+
+export const deleteAccessToken = async () => {
+    try {
+        await SecureStore.deleteItemAsync('accessToken');
+        removeTokenFromAxios();
+        return true;
+    } catch (error) {
+        console.log("Lỗi khi xóa token", error);
+    }
+    return false;
+
+}
+export const removeTokenFromAxios = () => {
+    // axios.interceptors.request.eject(axios.interceptors.request); // Xóa Axios interceptors
+    // Hoặc chỉ cần xóa Authorization header:
+    axios.interceptors.request.use(function (config) {
+        delete config.headers.Authorization;
+        return config;
+    }, function (error) {
+        return Promise.reject(error);
+    });
+}

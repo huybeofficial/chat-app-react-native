@@ -2,62 +2,42 @@ import React, { useState } from "react"
 import { Image, View, StyleSheet, Text, TextInput, TouchableOpacity, Platform, } from "react-native"
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import Ionicons from '@expo/vector-icons/Ionicons'
-import { addTokenToAxios, getAccessToken, loginApi, setAccessToken } from "../services/authentication"
-import { validateEmail } from "../utils/validate";
+import { loginApi, setAccessToken } from "../services/authentication"
+import { Formik } from "formik";
+import * as Yup from "yup";
 
 const LoginScreen = ({ navigation }) => {
-    const [email, setEmail] = useState<string>("")
-    const [password, setPassword] = useState<string>("")
-
-    const [emailError, setEmailError] = useState("")
-    const [passwordError, setPasswordError] = useState("")
 
     const [showPassword, setShowPassword] = useState(false)
     const [visible, setVisible] = useState(true)
 
-    const handleBlurEmail = () => {
-        if (!email) {
-            setEmailError("Vui lòng nhập địa chỉ email.")
-        } else if (!validateEmail(email)) {
-            setEmailError("Địa chỉ email không hợp lệ.")
-        } else {
-            setEmailError("");
-        }
-    };
+    const validation = Yup.object().shape({
+        email: Yup.string().email("Địa chỉ email không hợp lệ.").required("Vui lòng nhập địa chỉ email."),
+        password: Yup.string().required("Vui lòng nhập mật khẩu."),
+    });
 
-    const handleBlurPassword = () => {
-        if (!password) {
-            setPasswordError("Vui lòng nhập mật khẩu.")
-        } else {
-            setPasswordError("");
-        }
-    };
 
-    const onLoginPressed = async () => {
-        if (validateEmail(email) && password) {
-            try {
-                const loginResponse = await loginApi({
-                    "email": email,
-                    "password": password
-                })
-                const { data } = loginResponse
-                console.log("------------------------", data)
-                // alert("Đăng nhập thành công!")
-                //Lưu token lại
-                const result = await setAccessToken(data?.tokens?.access?.token)
-                if (result) {
-                    alert("Đăng nhập thành công!")
-                    const accessToken = await getAccessToken()
-                    console.log(accessToken)
-                } else {
-                    alert("Lỗi khi đăng nhập: Không thể lưu accesstoken")
-                }
-            } catch (err) {
-                const { data } = err.response
-                alert(data.message)
+    const onLoginPressed = async (email, password) => {
+        try {
+            const loginResponse = await loginApi({
+                "email": email,
+                "password": password
+            })
+            const { data } = loginResponse
+            console.log("------", data)
+            //Lưu token lại
+            const result = await setAccessToken(data?.token)
+            console.log("-----", result)
+            if (result) {
+
+                navigation.replace("HomeScreen")
+
+            } else {
+                alert("Thông tin không đúng!")
             }
-        } else {
-            alert("Vui lòng nhập đầy đủ thông tin!")
+        } catch (err) {
+            const { data } = err.response
+            alert(data.message)
         }
     }
 
@@ -66,66 +46,84 @@ const LoginScreen = ({ navigation }) => {
             enableOnAndroid={true}
             enableAutomaticScroll={(Platform.OS === 'ios')}
             style={{ backgroundColor: "#fff" }}>
-            <View style={styles.container}>
-                <View style={styles.header}>
-                    <Image style={styles.mainImage} source={require('../assets/img/chat.png')} />
-                    <Text style={styles.mainText}>Xin chào,</Text>
-                    <Text style={styles.descriptText} > Đăng nhập để tiếp tục </Text>
-                </View>
+            <Formik initialValues={{ email: "", password: "" }}
+                validationSchema={validation}
+                onSubmit={(values, { resetForm }) => {
+                    // todo
+                    onLoginPressed(values.email, values.password)
 
-                <View style={styles.content}>
+                    resetForm()
+                }}>
+                {formikProps => (
 
-                    <View style={styles.inputContainer} >
-                        <Ionicons name="mail-outline" size={20} color="#6ce31e" style={styles.inputIcon} />
-                        <TextInput value={email}
-                            keyboardType="email-address"
-                            placeholder="Nhập địa chỉ Email"
-                            style={styles.input}
-                            onChangeText={(value) => {
-                                setEmail(value)
-                            }}
-                            onBlur={handleBlurEmail}
-                        />
-                    </View>
-                    {emailError ? <Text style={styles.error}>{emailError}</Text> : null}
+                    <View style={styles.container}>
+                        <View style={styles.header}>
+                            <Image style={styles.mainImage} source={require('../assets/img/chat.png')} />
+                            <Text style={styles.mainText}>Xin chào,</Text>
+                            <Text style={styles.descriptText} > Đăng nhập để tiếp tục </Text>
+                        </View>
 
-                    <View style={styles.inputContainer} >
-                        <Ionicons name="lock-closed" size={20} color="#6ce31e" style={styles.inputIcon} />
-                        <TextInput value={password}
-                            placeholder="Nhập mật khẩu"
-                            style={styles.input}
-                            secureTextEntry={visible}
-                            onChangeText={(value) => {
-                                setPassword(value)
-                            }}
-                            onBlur={handleBlurPassword}
-                        />
-                        <TouchableOpacity onPress={() => {
-                            setVisible(!visible)
-                            setShowPassword(!showPassword)
-                        }}>
-                            <Ionicons name={showPassword === false ? "eye-off-outline" : "eye-outline"} size={25} color="#000" style={{ position: "absolute", right: 5, paddingTop: 5 }} />
-                        </TouchableOpacity>
-                    </View>
-                    {passwordError ? <Text style={styles.error}>{passwordError}</Text> : null}
-                </View>
-                <View style={{ alignItems: "flex-end" }}>
-                    <View style={styles.buttons}>
-                        <TouchableOpacity style={styles.button} onPress={onLoginPressed}>
-                            <Text style={styles.logInLabel}>ĐĂNG NHẬP</Text>
-                        </TouchableOpacity >
-                    </View>
+                        <View style={styles.content}>
 
-                    <View style={styles.another}>
-                        <Text style={styles.another}> Bạn chưa có tài khoản?</Text>
-                        <TouchableOpacity onPress={() => {
-                            navigation.replace("RegisterScreen")
-                        }}>
-                            <Text style={styles.signUpLabel} >Đăng ký ngay</Text>
-                        </TouchableOpacity>
+                            <View style={styles.inputContainer} >
+                                <Ionicons name="mail-outline" size={20} color="#6ce31e" style={styles.inputIcon} />
+                                <TextInput
+                                    // value={email}
+                                    keyboardType="email-address"
+                                    placeholder="Nhập địa chỉ Email"
+                                    style={styles.input}
+                                    onChangeText={formikProps.handleChange("email")}
+                                    onBlur={formikProps.handleBlur("email")}
+                                    value={formikProps.values.email}
+                                />
+                            </View>
+                            {formikProps.touched.email && formikProps.errors.email ? (
+                                <Text style={styles.error}>{formikProps.errors.email}</Text>
+                            ) : null}
+                            {/* {emailError ? <Text style={styles.error}>{emailError}</Text> : null} */}
+
+                            <View style={styles.inputContainer} >
+                                <Ionicons name="lock-closed" size={20} color="#6ce31e" style={styles.inputIcon} />
+                                <TextInput
+                                    // value={password}
+                                    placeholder="Nhập mật khẩu"
+                                    style={styles.input}
+                                    secureTextEntry={visible}
+                                    onChangeText={formikProps.handleChange("password")}
+                                    onBlur={formikProps.handleBlur("password")}
+                                    value={formikProps.values.password}
+                                />
+                                <TouchableOpacity onPress={() => {
+                                    setVisible(!visible)
+                                    setShowPassword(!showPassword)
+                                }}>
+                                    <Ionicons name={showPassword === false ? "eye-off-outline" : "eye-outline"} size={25} color="#000" style={{ position: "absolute", right: 5, paddingTop: 5 }} />
+                                </TouchableOpacity>
+                            </View>
+                            {/* {passwordError ? <Text style={styles.error}>{passwordError}</Text> : null} */}
+                            {formikProps.touched.password && formikProps.errors.password ? (
+                                <Text style={styles.error}>{formikProps.errors.password}</Text>
+                            ) : null}
+                        </View>
+                        <View style={{ alignItems: "flex-end" }}>
+                            <View style={styles.buttons}>
+                                <TouchableOpacity style={styles.button} onPress={formikProps.handleSubmit}>
+                                    <Text style={styles.logInLabel}>ĐĂNG NHẬP</Text>
+                                </TouchableOpacity >
+                            </View>
+
+                            <View style={styles.another}>
+                                <Text style={styles.another}> Bạn chưa có tài khoản?</Text>
+                                <TouchableOpacity onPress={() => {
+                                    navigation.replace("RegisterScreen")
+                                }}>
+                                    <Text style={styles.signUpLabel} >Đăng ký ngay</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
                     </View>
-                </View>
-            </View>
+                )}
+            </Formik>
         </KeyboardAwareScrollView>
     )
 }
