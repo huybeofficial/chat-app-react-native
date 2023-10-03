@@ -1,30 +1,27 @@
+import { StatusBar } from 'expo-status-bar';
+import { StyleSheet, Text, View } from 'react-native';
 import { createStackNavigator } from 'react-navigation-stack';
 import { createAppContainer } from 'react-navigation';
 import RegisterScreen from './screens/RegisterScreen'
 import LoginScreen from './screens/LoginScreen'
-import StartScreen from './screens/StartScreen';
-import WelcomeScreen from './screens/WelcomeScreen';
-import HomeScreen from './screens/HomeScreen';
+import HomeTabs from './screens/HomeTabs';
+
 
 const StackNavigator = createStackNavigator({
-  StartScreen: {
-    screen: StartScreen,
-  },
   LoginScreen: {
     screen: LoginScreen
   },
   RegisterScreen: {
     screen: RegisterScreen
   },
-  WelcomeScreen: {
-    screen: WelcomeScreen
-  },
-  HomeScreen: {
-    screen: HomeScreen
+  HomeTabs: {
+    screen: HomeTabs
   },
 }, {
-  initialRouteName: "WelcomeScreen",
+  initialRouteName: "LoginScreen",
   defaultNavigationOptions: { headerShown: false },
+  detachInactiveScreens: true,
+
 })
 
 

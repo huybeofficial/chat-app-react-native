@@ -5,6 +5,11 @@ import { registerApi } from '../services/authentication'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { Formik } from "formik";
 import * as Yup from "yup";
+import Toast from "react-native-toast-message";
+import Background from "../component/Background";
+import { LinearGradient } from "expo-linear-gradient"
+import BackButton from "../component/BackButton";
+import { getStatusBarHeight } from 'react-native-status-bar-height'
 
 
 const RegisterScreen = ({ navigation }) => {
@@ -42,10 +47,15 @@ const RegisterScreen = ({ navigation }) => {
         }
     }
     return (
-        <KeyboardAwareScrollView
-            enableOnAndroid={true}
-            enableAutomaticScroll={(Platform.OS === 'ios')}
-            style={{ backgroundColor: "#fff" }}>
+        <Background>
+            <TouchableOpacity onPress={() => {
+                navigation.goBack()
+            }} style={styles.container}>
+                <Image
+                    style={styles.image}
+                    source={require('../assets/img/arrow_back.png')}
+                />
+            </TouchableOpacity>
             <Formik initialValues={{ email: "", username: "", password: "", confirmPassword: "" }}
                 validationSchema={validation}
                 onSubmit={(values, { resetForm }) => {
@@ -55,18 +65,14 @@ const RegisterScreen = ({ navigation }) => {
                 }}>
                 {formikProps => (
 
-                    <View style={styles.container}>
+                    <View>
                         <View style={styles.header}>
-                            <Image style={styles.mainImage} source={require('../assets/img/chat.png')} />
-                            <Text style={styles.mainText}>Xin chào,</Text>
-                            <Text style={styles.descriptText} > Đăng ký để tiếp tục </Text>
+                            <Text numberOfLines={1} style={styles.mainText}>Đăng ký</Text>
                         </View>
+                        <View style={styles.inputContainer}>
 
-
-                        <View style={styles.content}>
-
-                            <View style={styles.inputContainer} >
-                                <Ionicons name="person-outline" size={20} color="#6ce31e" style={styles.inputIcon} />
+                            <View style={styles.inputItem} >
+                                <Ionicons name="person-outline" size={20} color="#448976" style={styles.inputIcon} />
                                 <TextInput
                                     value={formikProps.values.username}
                                     placeholder="Nhập tên"
@@ -79,8 +85,8 @@ const RegisterScreen = ({ navigation }) => {
                                 <Text style={styles.error}>{formikProps.errors.username}</Text>
                             ) : null}
 
-                            <View style={styles.inputContainer} >
-                                <Ionicons name="mail-outline" size={20} color="#6ce31e" style={styles.inputIcon} />
+                            <View style={styles.inputItem} >
+                                <Ionicons name="mail-outline" size={20} color="#448976" style={styles.inputIcon} />
                                 <TextInput
                                     // value={email}
                                     keyboardType="email-address"
@@ -94,9 +100,8 @@ const RegisterScreen = ({ navigation }) => {
                             {formikProps.touched.email && formikProps.errors.email ? (
                                 <Text style={styles.error}>{formikProps.errors.email}</Text>
                             ) : null}
-
-                            <View style={styles.inputContainer} >
-                                <Ionicons name="lock-closed" size={20} color="#6ce31e" style={styles.inputIcon} />
+                            <View style={styles.inputItem} >
+                                <Ionicons name="lock-closed" size={20} color="#448976" style={styles.inputIcon} />
                                 <TextInput
                                     // value={password}
                                     placeholder="Nhập mật khẩu"
@@ -110,7 +115,7 @@ const RegisterScreen = ({ navigation }) => {
                                     setVisible(!visible)
                                     setShowPassword(!showPassword)
                                 }}>
-                                    <Ionicons name={showPassword === false ? "eye-off-outline" : "eye-outline"} size={25} color="#000" style={{ position: "absolute", right: 5, paddingTop: 5 }} />
+                                    <Ionicons name={showPassword === false ? "eye-off-outline" : "eye-outline"} size={25} color="#000" style={{ position: "absolute", right: 5, paddingTop: 5, color: "#448976" }} />
                                 </TouchableOpacity>
                             </View>
                             {formikProps.touched.password && formikProps.errors.password ? (
@@ -118,13 +123,13 @@ const RegisterScreen = ({ navigation }) => {
                             ) : null}
 
 
-                            <View style={styles.inputContainer} >
-                                <Ionicons name="lock-closed" size={20} color="#6ce31e" style={styles.inputIcon} />
+                            <View style={styles.inputItem} >
+                                <Ionicons name="lock-closed" size={20} color="#448976" style={styles.inputIcon} />
                                 <TextInput
                                     // value={password}
                                     placeholder="Nhập lại mật khẩu"
                                     style={styles.input}
-                                    secureTextEntry={visible}
+                                    secureTextEntry={visible1}
                                     onChangeText={formikProps.handleChange("confirmPassword")}
                                     onBlur={formikProps.handleBlur("confirmPassword")}
                                     value={formikProps.values.confirmPassword}
@@ -133,7 +138,7 @@ const RegisterScreen = ({ navigation }) => {
                                     setVisible1(!visible1)
                                     setShowConfirmPassword(!showConfirmPassword)
                                 }}>
-                                    <Ionicons name={showConfirmPassword === false ? "eye-off-outline" : "eye-outline"} size={25} color="#000" style={{ position: "absolute", right: 5, paddingTop: 5 }} />
+                                    <Ionicons name={showConfirmPassword === false ? "eye-off-outline" : "eye-outline"} size={25} color="#000" style={{ position: "absolute", right: 5, paddingTop: 5, color: "#62825f" }} />
                                 </TouchableOpacity>
                             </View>
                             {formikProps.touched.confirmPassword && formikProps.errors.confirmPassword ? (
@@ -141,50 +146,56 @@ const RegisterScreen = ({ navigation }) => {
                             ) : null}
 
                         </View>
-                        <View style={{ alignItems: "flex-end" }}>
-                            <View style={styles.buttons}>
-                                <TouchableOpacity
+                        <View style={{ justifyContent: "center", alignItems: "center" }}>
+                            <TouchableOpacity onPress={formikProps.handleSubmit}>
+                                <LinearGradient
+                                    colors={['#60711F', '#FA9015']}
+                                    start={{ x: 0, y: 1 }}
+                                    end={{ x: 1, y: 0 }}
                                     style={styles.button}
-                                    onPress={formikProps.handleSubmit}
                                 >
                                     <Text style={styles.signUpLabel}>ĐĂNG KÝ</Text>
-                                </TouchableOpacity>
-                            </View>
+                                </LinearGradient>
+                            </TouchableOpacity >
                             <View style={styles.another}>
-                                <Text style={styles.another}> Đã có tài khoản?</Text>
+                                <Text style={{ fontSize: 17 }}> Đã có tài khoản?</Text>
                                 <TouchableOpacity onPress={() => {
-                                    navigation.replace("LoginScreen")
+                                    navigation.navigate("LoginScreen")
                                 }}>
-                                    <Text style={styles.logInLabel} >Đăng nhập</Text>
+                                    <Text style={styles.loginLabel} >Đăng nhập</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
                     </View>
                 )}
             </Formik>
-        </KeyboardAwareScrollView>
+            <Toast />
+        </Background>
     )
 }
 
 
 
 const styles = StyleSheet.create({
-    mainImage: {
-        width: 100,
-        height: 100,
-    },
     container: {
-        flex: 1,
-        margin: 5,
-        backgroundColor: "#fff",
-        padding: 20
+        position: 'absolute',
+        top: 10 + getStatusBarHeight(),
+        left: 4,
+    },
+    image: {
+        width: 24,
+        height: 24,
     },
     header: {
-        marginBottom: 30
+        fontSize: 21,
+        marginTop: 150,
+        fontWeight: 'bold',
+        paddingVertical: 12,
+        alignItems: "center"
     },
     mainText: {
         fontSize: 35,
-        fontWeight: "bold"
+        fontWeight: "bold",
     },
     descriptText: {
         // textAlign: "center",
@@ -192,13 +203,11 @@ const styles = StyleSheet.create({
         color: "#94979c",
         fontWeight: "bold"
     },
-    content: {
-        marginVertical: 10,
-        alignItems: "flex-end",
-        width: "100%",
-    },
     inputContainer: {
-        marginTop: 10,
+        margin: 20
+    },
+    inputItem: {
+        marginTop: 20,
         flexDirection: "row",
         borderBottomWidth: 1,
         borderBottomColor: "gray",
@@ -213,36 +222,35 @@ const styles = StyleSheet.create({
         marginTop: 10,
         position: "absolute"
     },
-    buttons: {
-        backgroundColor: "#50b30e",
-        marginTop: 30,
-        padding: 12,
-        width: "100%",
-        borderRadius: 50
-    },
     button: {
-        width: "100%",
-        alignItems: "center",
+        marginTop: 20,
+        backgroundColor: "",
+        width: 250,
+        borderRadius: 50,
+        padding: 10
     },
     another: {
         marginTop: 10,
         flexDirection: "row",
-        fontSize: 17
+        fontSize: 17,
+        alignItems: "center",
+        alignSelf: "flex-end"
     },
     signUpLabel: {
         color: "#fff",
         fontWeight: "700",
-        fontSize: 16
+        textAlign: "center",
+        fontSize: 18
     },
-    logInLabel: {
+    loginLabel: {
         margin: 10,
-        color: "red",
+        color: "#428DFE",
         fontSize: 17,
         fontWeight: "bold"
     },
     error: {
         color: "red",
-        marginBottom: 10
+
     }
 
 })
