@@ -18,7 +18,7 @@ const StackNavigator = createStackNavigator({
     screen: HomeTabs
   },
 }, {
-  initialRouteName: "LoginScreen",
+  initialRouteName: "HomeTabs",
   defaultNavigationOptions: { headerShown: false },
   detachInactiveScreens: true,
 

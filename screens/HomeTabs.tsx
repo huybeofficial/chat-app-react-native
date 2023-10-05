@@ -10,7 +10,6 @@ import Ionicons from '@expo/vector-icons/Ionicons'
 
 const Tab = createBottomTabNavigator();
 const HomeTabs = () => {
-    const [onPressTabIcon, setOnPressTabIcon] = useState(true)
     return (
         <NavigationContainer>
             <Tab.Navigator screenOptions={{
@@ -22,7 +21,7 @@ const HomeTabs = () => {
                     bottom: 0,
                     left: 0,
                     right: 0,
-                    height: 60,
+                    height: 70,
                 }
             }}>
                 {
@@ -32,9 +31,10 @@ const HomeTabs = () => {
                     options={{
                         tabBarIcon: ({ focused }: { focused: boolean }) => {
                             return (
-                                <View style={{ borderTopColor: focused ? "orange" : "white", borderTopWidth: 2, padding: 16 }} >
+                                <View style={{ borderTopColor: focused ? "orange" : "white", borderTopWidth: 2, paddingVertical: 12, alignItems: "center" }} >
                                     <Ionicons
-                                        style={styles.tabIcon} name={focused ? "chatbubble-ellipses" : "chatbubble-ellipses-outline"} color={focused ? "orange" : "black"} size={25} />
+                                        style={styles.tabIcon} name={focused ? "chatbubble-ellipses" : "chatbubble-ellipses-outline"} color={focused ? "orange" : "gray"} size={25} />
+                                    <Text style={{ textAlign: "center", fontSize: 12, color: focused ? "orange" : "gray" }}>Đoạn chat</Text>
                                 </View>
                             )
                         }
@@ -43,9 +43,10 @@ const HomeTabs = () => {
                     options={{
                         tabBarIcon: ({ focused }: { focused: boolean }) => {
                             return (
-                                <View style={{ borderTopColor: focused ? "orange" : "white", borderTopWidth: 2, padding: 16 }}>
+                                <View style={{ borderTopColor: focused ? "orange" : "white", borderTopWidth: 2, paddingVertical: 12, alignItems: "center" }}>
                                     <Ionicons
-                                        style={styles.tabIcon} name={focused ? "md-people" : "md-people-outline"} color={focused ? "orange" : "black"} size={25} />
+                                        style={styles.tabIcon} name={focused ? "md-people" : "md-people-outline"} color={focused ? "orange" : "gray"} size={25} />
+                                    <Text style={{ textAlign: "center", fontSize: 12, color: focused ? "orange" : "gray" }}>Bạn bè</Text>
                                 </View>
                             )
                         }
@@ -54,9 +55,10 @@ const HomeTabs = () => {
                     options={{
                         tabBarIcon: ({ focused }: { focused: boolean }) => {
                             return (
-                                <View style={{ borderTopColor: focused ? "orange" : "white", borderTopWidth: 2, padding: 16 }}>
+                                <View style={{ borderTopColor: focused ? "orange" : "white", borderTopWidth: 2, paddingVertical: 12, alignItems: "center" }}>
                                     <Ionicons
-                                        style={styles.tabIcon} name={focused ? "md-settings" : "md-settings-outline"} color={focused ? "orange" : "black"} size={25} />
+                                        style={styles.tabIcon} name={focused ? "md-settings" : "md-settings-outline"} color={focused ? "orange" : "gray"} size={25} />
+                                    <Text style={{ textAlign: "center", fontSize: 12, color: focused ? "orange" : "gray" }}>Cài đặt</Text>
                                 </View>
                             )
                         }
