@@ -1,4 +1,3 @@
-import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import { createStackNavigator } from 'react-navigation-stack';
 import { createAppContainer } from 'react-navigation';
@@ -18,9 +17,10 @@ const StackNavigator = createStackNavigator({
     screen: HomeTabs
   },
 }, {
-  initialRouteName: "RegisterScreen",
+  initialRouteName: "HomeTabs",
   defaultNavigationOptions: { headerShown: false },
   detachInactiveScreens: true,
+
 
 })
 

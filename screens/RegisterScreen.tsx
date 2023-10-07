@@ -9,6 +9,7 @@ import Toast from "react-native-toast-message";
 import Background from "../component/Background";
 import { LinearGradient } from "expo-linear-gradient"
 import { getStatusBarHeight } from 'react-native-status-bar-height'
+import { showToast } from "../component/showToast";
 
 
 const RegisterScreen = ({ navigation }) => {
@@ -35,7 +36,7 @@ const RegisterScreen = ({ navigation }) => {
             })
             const { data } = signupResponse
             console.log(data)
-            alert("Đăng ký thành công!")
+            showToast("success", "Đăng ký thành công!")
             setTimeout(() => {
                 navigation.replace("LoginScreen")
             }, 2000)
@@ -56,14 +57,13 @@ const RegisterScreen = ({ navigation }) => {
             </TouchableOpacity>
             <Formik initialValues={{ email: "", username: "", password: "", confirmPassword: "" }}
                 validationSchema={validation}
-                onSubmit={(values, { resetForm }) => {
+                onSubmit={(values) => {
                     // todo
                     onSignUpPressed({
                         email: values.email,
                         password: values.password,
                         username: values.username
                     })
-                    resetForm()
                 }}>
                 {formikProps => (
 
