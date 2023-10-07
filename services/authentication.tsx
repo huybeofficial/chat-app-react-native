@@ -1,6 +1,13 @@
 import axios from "axios"
 import * as SecureStore from 'expo-secure-store'
-import { registerUrl, loginUrl, logoutUrl } from "./api"
+import { registerUrl, loginUrl, logoutUrl, listConversationUrl } from "./api"
+
+export interface Conversation {
+    name: string,
+    textMessage: string,
+    avatar: string
+}
+
 
 interface RegisterBody {
     email: string
@@ -47,6 +54,13 @@ export const logoutApi = ({ email, password }: LogoutBody) => {
         headers: {
             'Content-Type': 'application/json'
         },
+    })
+}
+
+export const getConversationApi = () => {
+    return axios({
+        method: "GET",
+        url: 'https://65219161a4199548356d60b0.mockapi.io/conversation'
     })
 }
 
@@ -114,3 +128,6 @@ export const removeTokenFromAxios = () => {
         return Promise.reject(error);
     });
 }
+
+
+
