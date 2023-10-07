@@ -10,41 +10,77 @@ import Background from "../component/Background";
 import { LinearGradient } from "expo-linear-gradient"
 import { getStatusBarHeight } from 'react-native-status-bar-height'
 import { showToast } from "../component/showToast";
+import { validateEmail } from "../utils/validate";
 
 
 const RegisterScreen = ({ navigation }) => {
+    const [username, setUsername] = useState("")
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const [confirmedPassword, setConfirmedPassword] = useState("")
+    const [usernameError, setUsernameError] = useState("");
+    const [emailError, setEmailError] = useState("");
+    const [passwordError, setPasswordError] = useState("");
+    const [confirmedPasswordError, setConfirmedPasswordError] = useState("");
 
     const [showPassword, setShowPassword] = useState(false)
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-
     const [visible, setVisible] = useState(true)
     const [visible1, setVisible1] = useState(true)
 
-    const validation = Yup.object().shape({
-        username: Yup.string().required("Nhập cái tên vào."),
-        email: Yup.string().email("Địa chỉ email không hợp lệ.").required("Vui lòng nhập địa chỉ email."),
-        password: Yup.string().required("Vui lòng nhập mật khẩu."),
-        confirmPassword: Yup.string().required("Vui lòng nhập lại mật khẩu.")
-    });
-
-    const onSignUpPressed = async ({ email, username, password }) => {
-        try {
-            const signupResponse = await registerApi({
-                "email": email,
-                "username": username,
-                "password": password
-            })
-            const { data } = signupResponse
-            console.log(data)
-            showToast("success", "Đăng ký thành công!")
-            setTimeout(() => {
-                navigation.replace("LoginScreen")
-            }, 2000)
-        } catch (err) {
-            const { data } = err.response
-            alert(data.message)
+    const handleBlurUsername = () => {
+        if (!username) {
+            setUsernameError("Vui lòng nhập tên người dùng.");
+        } else {
+            setUsernameError("");
         }
-    }
+    };
+    const handleBlurEmail = () => {
+        if (!email) {
+            setEmailError("Vui lòng nhập địa chỉ email.");
+        } else if (!validateEmail(email)) {
+            setEmailError("Địa chỉ email không hợp lệ.");
+        } else {
+            setEmailError("");
+        }
+    };
+    const handleBlurPassword = () => {
+        if (!password) {
+            setPasswordError("Vui lòng nhập mật khẩu.");
+        } else {
+            setPasswordError("");
+        }
+    };
+    const handleBlurConfirmedPassword = () => {
+        if (!confirmedPassword) {
+            setConfirmedPasswordError("Vui lòng xác nhận mật khẩu.");
+        } else if (password !== confirmedPassword) {
+            setConfirmedPasswordError("Mật khẩu xác nhận không khớp.");
+        } else {
+            setConfirmedPasswordError("");
+        }
+    };
+    const onSignUpPressed = async () => {
+        if (username && validateEmail(email) && password && password === confirmedPassword) {
+            try {
+                const signupResponse = await registerApi({
+                    username,
+                    email,
+                    password
+                })
+                const { data } = signupResponse
+                alert("Đăng ký thành công!")
+                setTimeout(() => {
+                    navigation.replace("LoginScreen")
+                }, 3000)
+            } catch (err) {
+                const { data } = err.response
+                alert("Email đã tồn tại!")
+            }
+        } else {
+            showToast("error", "Vui lòng nhập đủ thông tin!")
+        }
+    };
     return (
         <Background>
             <TouchableOpacity onPress={() => {
@@ -55,122 +91,104 @@ const RegisterScreen = ({ navigation }) => {
                     source={require('../assets/img/arrow_back.png')}
                 />
             </TouchableOpacity>
-            <Formik initialValues={{ email: "", username: "", password: "", confirmPassword: "" }}
-                validationSchema={validation}
-                onSubmit={(values) => {
-                    // todo
-                    onSignUpPressed({
-                        email: values.email,
-                        password: values.password,
-                        username: values.username
-                    })
-                }}>
-                {formikProps => (
 
-                    <View>
-                        <View style={styles.header}>
-                            <Text numberOfLines={1} style={styles.mainText}>Đăng ký</Text>
-                        </View>
-                        <View style={styles.inputContainer}>
+            <View>
+                <View style={styles.header}>
+                    <Text numberOfLines={1} style={styles.mainText}>Đăng ký</Text>
+                </View>
+                <View style={styles.inputContainer}>
 
-                            <View style={styles.inputItem} >
-                                <Ionicons name="person-outline" size={20} color="#448976" style={styles.inputIcon} />
-                                <TextInput
-                                    value={formikProps.values.username}
-                                    placeholder="Nhập tên"
-                                    style={styles.input}
-                                    onChangeText={formikProps.handleChange("username")}
-                                    onBlur={formikProps.handleBlur("username")}
-                                />
-                            </View>
-                            {formikProps.touched.username && formikProps.errors.username ? (
-                                <Text style={styles.error}>{formikProps.errors.username}</Text>
-                            ) : null}
-
-                            <View style={styles.inputItem} >
-                                <Ionicons name="mail-outline" size={20} color="#448976" style={styles.inputIcon} />
-                                <TextInput
-                                    // value={email}
-                                    keyboardType="email-address"
-                                    placeholder="Nhập địa chỉ Email"
-                                    style={styles.input}
-                                    onChangeText={formikProps.handleChange("email")}
-                                    onBlur={formikProps.handleBlur("email")}
-                                    value={formikProps.values.email}
-                                />
-                            </View>
-                            {formikProps.touched.email && formikProps.errors.email ? (
-                                <Text style={styles.error}>{formikProps.errors.email}</Text>
-                            ) : null}
-                            <View style={styles.inputItem} >
-                                <Ionicons name="lock-closed" size={20} color="#448976" style={styles.inputIcon} />
-                                <TextInput
-                                    // value={password}
-                                    placeholder="Nhập mật khẩu"
-                                    style={styles.input}
-                                    secureTextEntry={visible}
-                                    onChangeText={formikProps.handleChange("password")}
-                                    onBlur={formikProps.handleBlur("password")}
-                                    value={formikProps.values.password}
-                                />
-                                <TouchableOpacity onPress={() => {
-                                    setVisible(!visible)
-                                    setShowPassword(!showPassword)
-                                }}>
-                                    <Ionicons name={showPassword === false ? "eye-off-outline" : "eye-outline"} size={25} color="#000" style={{ position: "absolute", right: 5, paddingTop: 5, color: "#448976" }} />
-                                </TouchableOpacity>
-                            </View>
-                            {formikProps.touched.password && formikProps.errors.password ? (
-                                <Text style={styles.error}>{formikProps.errors.password}</Text>
-                            ) : null}
-
-
-                            <View style={styles.inputItem} >
-                                <Ionicons name="lock-closed" size={20} color="#448976" style={styles.inputIcon} />
-                                <TextInput
-                                    // value={password}
-                                    placeholder="Nhập lại mật khẩu"
-                                    style={styles.input}
-                                    secureTextEntry={visible1}
-                                    onChangeText={formikProps.handleChange("confirmPassword")}
-                                    onBlur={formikProps.handleBlur("confirmPassword")}
-                                    value={formikProps.values.confirmPassword}
-                                />
-                                <TouchableOpacity onPress={() => {
-                                    setVisible1(!visible1)
-                                    setShowConfirmPassword(!showConfirmPassword)
-                                }}>
-                                    <Ionicons name={showConfirmPassword === false ? "eye-off-outline" : "eye-outline"} size={25} color="#000" style={{ position: "absolute", right: 5, paddingTop: 5, color: "#62825f" }} />
-                                </TouchableOpacity>
-                            </View>
-                            {formikProps.touched.confirmPassword && formikProps.errors.confirmPassword ? (
-                                <Text style={styles.error}>{formikProps.errors.confirmPassword}</Text>
-                            ) : null}
-
-                        </View>
-                        <View style={{ justifyContent: "center", alignItems: "center" }}>
-                            <TouchableOpacity onPress={formikProps.handleSubmit}>
-                                <LinearGradient
-                                    colors={['#60711F', '#FA9015']}
-                                    start={{ x: 0, y: 1 }}
-                                    end={{ x: 1, y: 0 }}
-                                    style={styles.button}
-                                >
-                                    <Text style={styles.signUpLabel}>ĐĂNG KÝ</Text>
-                                </LinearGradient>
-                            </TouchableOpacity >
-                            <View style={styles.another}>
-                                <Text style={{ fontSize: 17 }}> Đã có tài khoản?</Text>
-                                <TouchableOpacity onPress={() => {
-                                    navigation.navigate("LoginScreen")
-                                }}>
-                                    <Text style={styles.loginLabel} >Đăng nhập</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
+                    <View style={styles.inputItem} >
+                        <Ionicons name="person-outline" size={20} color="#448976" style={styles.inputIcon} />
+                        <TextInput value={username}
+                            placeholder="Nhập tên"
+                            style={styles.input}
+                            onChangeText={(value) => {
+                                setUsername(value)
+                            }}
+                            onBlur={handleBlurUsername}
+                        />
                     </View>
-                )}
-            </Formik>
+                    {usernameError ? <Text style={styles.error}>{usernameError}</Text> : null}
+
+                    <View style={styles.inputItem} >
+                        <Ionicons name="mail-outline" size={20} color="#448976" style={styles.inputIcon} />
+                        <TextInput value={email}
+                            keyboardType="email-address"
+                            placeholder="Nhập địa chỉ Email"
+                            style={styles.input}
+                            onChangeText={(value) => {
+                                setEmail(value)
+                            }}
+                            onBlur={handleBlurEmail}
+                        />
+                    </View>
+                    {emailError ? <Text style={styles.error}>{emailError}</Text> : null}
+
+                    <View style={styles.inputItem} >
+                        <Ionicons name="lock-closed" size={20} color="#448976" style={styles.inputIcon} />
+                        <TextInput value={password}
+                            placeholder="Nhập mật khẩu"
+                            style={styles.input}
+                            secureTextEntry={visible}
+                            onChangeText={(value) => {
+                                setPassword(value)
+                            }}
+                            onBlur={handleBlurPassword}
+                        />
+                        <TouchableOpacity onPress={() => {
+                            setVisible(!visible)
+                            setShowPassword(!showPassword)
+                        }}>
+                            <Ionicons name={showPassword === false ? "eye-off-outline" : "eye-outline"} size={25} color="#000" style={{ position: "absolute", right: 5, paddingTop: 5 }} />
+                        </TouchableOpacity>
+                    </View>
+                    {passwordError ? <Text style={styles.error}>{passwordError}</Text> : null}
+
+
+                    <View style={styles.inputItem} >
+                        <Ionicons name="lock-closed" size={20} color="#448976" style={styles.inputIcon} />
+                        <TextInput
+                            value={confirmedPassword}
+                            placeholder="Nhập lại mật khẩu"
+                            style={styles.input}
+                            secureTextEntry={visible1}
+                            onChangeText={(value) => {
+                                setConfirmedPassword(value)
+                            }}
+                            onBlur={handleBlurConfirmedPassword}
+                        />
+                        <TouchableOpacity onPress={() => {
+                            setVisible1(!visible1)
+                            setShowConfirmPassword(!showConfirmPassword)
+                        }}>
+                            <Ionicons name={showConfirmPassword === false ? "eye-off-outline" : "eye-outline"} size={25} color="#000" style={{ position: "absolute", right: 5, paddingTop: 5 }} />
+                        </TouchableOpacity>
+                    </View>
+                    {confirmedPasswordError ? <Text style={styles.error}>{confirmedPasswordError}</Text> : null}
+
+                </View>
+                <View style={{ justifyContent: "center", alignItems: "center" }}>
+                    <TouchableOpacity onPress={onSignUpPressed}>
+                        <LinearGradient
+                            colors={['#60711F', '#FA9015']}
+                            start={{ x: 0, y: 1 }}
+                            end={{ x: 1, y: 0 }}
+                            style={styles.button}
+                        >
+                            <Text style={styles.signUpLabel}>ĐĂNG KÝ</Text>
+                        </LinearGradient>
+                    </TouchableOpacity >
+                    <View style={styles.another}>
+                        <Text style={{ fontSize: 17 }}> Đã có tài khoản?</Text>
+                        <TouchableOpacity onPress={() => {
+                            navigation.navigate("LoginScreen")
+                        }}>
+                            <Text style={styles.loginLabel} >Đăng nhập</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </View>
             <Toast />
         </Background>
     )
@@ -181,7 +199,7 @@ const RegisterScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         position: 'absolute',
-        top: 10 + getStatusBarHeight(),
+        top: getStatusBarHeight(),
         left: 4,
     },
     image: {

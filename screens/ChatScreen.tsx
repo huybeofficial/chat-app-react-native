@@ -1,41 +1,86 @@
-import { StyleSheet, Text, View, TextInput, SafeAreaView, Dimensions, FlatList } from 'react-native'
-import React, { useState } from 'react'
+import { Image, StyleSheet, Text, View, TextInput, SafeAreaView, Dimensions, FlatList, TouchableOpacity } from 'react-native'
+import React, { useState, useEffect } from 'react'
 import { Entypo } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
+import { Conversation, getConversationApi } from '../services/authentication'
 
 const windownWidth = Dimensions.get('window').width
 const windownHeight = Dimensions.get('window').height
 
-const ChatScreen = () => {
-    const [search, setSearch] = useState("")
+const ChatScreen = ({ navigation }) => {
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [conversation, setConversation] = useState<Conversation[]>([]);
+    const [textSearch, setTextSearch] = useState<string>("");
+    const [dataSearch, setDataSearch] = useState<Conversation[]>([]);
 
+    const getConversation = async () => {
+        setIsLoading(true);
+        try {
+            const listData = await getConversationApi();
+            const { data } = listData;
+            setConversation(data);
+        } catch (error) {
+            alert(error.response);
+        }
+        setIsLoading(false);
+    };
+
+    const renderConversationItem = ({ item }) => {
+        return (
+            <TouchableOpacity style={styles.getConversation} onPress={() => {
+                navigation.navigate('MessageScreen');
+            }}>
+                <Text style={{ fontSize: 15 }}>{item.name}</Text>
+                <Text style={{ fontSize: 13, color: "gray" }}>{item.textMessage}</Text>
+            </TouchableOpacity>
+        );
+    }
+
+    const handleSearch = (searchText: string) => {
+        const filteredConversation = conversation.filter((item) =>
+            item.name.toLowerCase().includes(searchText.toLowerCase())
+        );
+        setDataSearch(filteredConversation);
+    };
+
+    useEffect(() => {
+        getConversation();
+    }, []);
+
+    useEffect(() => {
+        handleSearch(textSearch);
+    }, [textSearch]);
 
     return (
         <SafeAreaView style={styles.container}>
-            <View style={styles.header}>
-                <Text style={{ fontSize: 20, fontWeight: "bold" }} >Cuộc trò chuyện</Text>
-                <Entypo style={{ position: "absolute", right: 20 }} name="new-message" size={25} color="black" />
-            </View>
-            <View style={styles.body}>
+            <View style={styles.heading}>
+                <View style={styles.header}>
+                    <Text style={{ fontSize: 20, fontWeight: "bold" }} >Đoạn chat</Text>
+                    <Entypo style={{ position: "absolute", right: 20 }} onPress={() => {
+                        navigation.navigate("NewMessageScreen");
+                    }}
+                        name="new-message" size={25} color="#428DFE" />
+                </View>
                 <TextInput
-                    value={search}
+                    value={textSearch}
                     placeholder="Tìm kiếm"
                     style={styles.searchInput}
-                    onChangeText={() => {
-                        setSearch(search);
+                    onChangeText={(value) => {
+                        setTextSearch(value);
                     }}
                 />
+            </View>
+            <View style={styles.body}>
                 <FlatList
-                    onRefresh={ }
-                    refreshing={ }
-                    style={styles.list}
-                    data={tasks}
-                    renderItem={(item) => renderTask(item)} />
+                    onRefresh={getConversation}
+                    refreshing={isLoading}
+                    data={textSearch ? dataSearch : conversation}
+                    renderItem={(item) => renderConversationItem(item)}
+                />
             </View>
             <StatusBar style="dark" />
         </SafeAreaView>
-
-    )
+    );
 }
 
 export default ChatScreen
@@ -44,27 +89,35 @@ const styles = StyleSheet.create({
 
     container: {
         flex: 1,
+        marginBottom: windownHeight * 0.3
+    },
+    heading: {
+        flexDirection: "column",
+        alignItems: "center",
+        width: "100%",
+        height: windownHeight * 0.2,
     },
     header: {
         flexDirection: 'row',
         alignItems: "center",
         justifyContent: "center",
-        marginTop: windownWidth * 0.1,
         width: "100%",
-        height: "5%",
+        marginTop: windownHeight * 0.09
+    },
+    searchInput: {
+        width: "95%",
+        backgroundColor: "#d3d3d3",
+        borderRadius: 5,
+        padding: 5,
+        marginVertical: 10
     },
     body: {
         width: "100%",
-        height: "95%",
-        borderColor: "green",
-        borderWidth: 1,
-        flex: 1,
-        alignItems: "center"
+        marginHorizontal: 5
     },
-    searchInput: {
-        width: "90%",
-        borderColor: "red",
-        borderWidth: 1,
-        padding: 5,
+    getConversation: {
+        borderBottomColor: "gray",
+        borderBottomWidth: 0.8,
+        paddingVertical: 5
     },
 })
