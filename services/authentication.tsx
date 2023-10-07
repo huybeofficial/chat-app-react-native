@@ -14,8 +14,13 @@ interface RegisterBody {
     username: string
     password: string
 }
+export interface User {
+    username: string,
+    email: string,
+    password: string
+}
 
-interface LoginBody {
+export interface LoginBody {
     email: string
     password: string
 }

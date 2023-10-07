@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react"
-import { View, StyleSheet, Text, TextInput, TouchableOpacity } from "react-native"
+import { Keyboard, View, StyleSheet, Text, TextInput, TouchableOpacity } from "react-native"
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { addTokenToAxios, getAccessToken, loginApi, setAccessToken } from "../services/authentication"
-import * as Yup from "yup";
 import Toast from "react-native-toast-message";
 import { LinearGradient } from 'expo-linear-gradient';
 import Background from "../component/Background";
@@ -17,12 +16,6 @@ const LoginScreen = ({ navigation }) => {
     const [passwordError, setPasswordError] = useState("")
     const [showPassword, setShowPassword] = useState(false)
     const [visible, setVisible] = useState(true)
-
-
-    const validation = Yup.object().shape({
-        email: Yup.string().email("Địa chỉ email không hợp lệ.").required("Vui lòng nhập địa chỉ email."),
-        password: Yup.string().required("Vui lòng nhập mật khẩu."),
-    });
 
     const handleBlurEmail = () => {
         if (!email) {
@@ -40,18 +33,18 @@ const LoginScreen = ({ navigation }) => {
         } else {
             setPasswordError("");
         }
-        const checkAuthenticated = async () => {
-            //Check đăng nhập
-            try {
-                const accessToken = await getAccessToken()
-                if (accessToken) {
-                    addTokenToAxios(accessToken)
-                    navigation.navigate("HomeScreen")
-                    console.log(accessToken)
-                }
-            } catch (error) {
-                console.log(error)
+    }
+    const checkAuthenticated = async () => {
+        //Check đăng nhập
+        try {
+            const accessToken = await getAccessToken()
+            if (accessToken) {
+                addTokenToAxios(accessToken)
+                navigation.navigate("HomeScreen")
+                console.log(accessToken)
             }
+        } catch (error) {
+            console.log(error)
         }
     }
 
@@ -64,7 +57,6 @@ const LoginScreen = ({ navigation }) => {
                 })
                 const { data } = loginResponse
                 console.log("------------------------", data)
-                // alert("Đăng nhập thành công!")
                 //Lưu token lại
                 const result = await setAccessToken(data?.tokens?.access?.token)
                 if (result) {
@@ -72,15 +64,17 @@ const LoginScreen = ({ navigation }) => {
                     const accessToken = await getAccessToken()
                     console.log(accessToken)
                 } else {
-                    alert("Lỗi khi đăng nhập: Không thể lưu accesstoken")
+                    showToast("error", "Lỗi khi đăng nhập", "Không thể lưu accesstoken")
                 }
+                navigation.navigate("HomeTabs", data)
             } catch (err) {
                 const { data } = err.response
                 alert(data.message)
             }
         } else {
-            showToast("error", "Vui lòng nhập đủ thông tin!")
+            showToast("error", "Vui lòng nhập đủ thông tin!", "")
         }
+        Keyboard.dismiss()
     }
 
     useEffect(() => {

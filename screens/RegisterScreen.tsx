@@ -1,10 +1,8 @@
 import React, { useState } from "react"
 import { Image, View, StyleSheet, Text, TextInput, TouchableOpacity, Platform } from "react-native"
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { registerApi } from '../services/authentication'
 import Ionicons from '@expo/vector-icons/Ionicons'
-import { Formik } from "formik";
-import * as Yup from "yup";
+
 import Toast from "react-native-toast-message";
 import Background from "../component/Background";
 import { LinearGradient } from "expo-linear-gradient"
@@ -69,16 +67,19 @@ const RegisterScreen = ({ navigation }) => {
                     password
                 })
                 const { data } = signupResponse
-                alert("Đăng ký thành công!")
+                console.log("------------------------", data)
+                showToast("success", "Đăng ký thành công!", "")
+
                 setTimeout(() => {
                     navigation.replace("LoginScreen")
                 }, 3000)
             } catch (err) {
                 const { data } = err.response
-                alert("Email đã tồn tại!")
+                console.log("------------------------", data)
+                showToast("error", "Email đã tồn tại!", "")
             }
         } else {
-            showToast("error", "Vui lòng nhập đủ thông tin!")
+            showToast("error", "Vui lòng nhập đủ thông tin!", "")
         }
     };
     return (
