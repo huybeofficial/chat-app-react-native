@@ -3,8 +3,8 @@ import * as SecureStore from 'expo-secure-store'
 import { registerUrl, loginUrl, logoutUrl } from "./api"
 
 interface RegisterBody {
-    username: string
     email: string
+    username: string
     password: string
 }
 
@@ -17,11 +17,11 @@ interface LogoutBody {
     password: string
 }
 
-export const registerApi = ({ username, email, password }: RegisterBody) => {
+export const registerApi = ({ email, username, password }: RegisterBody) => {
     const registerRequest = axios({
         method: "POST",
         url: registerUrl,
-        data: { username, email, password },
+        data: { email: email, username: username, password: password },
         headers: {
             'Content-Type': 'application/json'
         },

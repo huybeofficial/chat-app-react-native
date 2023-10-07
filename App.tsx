@@ -18,7 +18,7 @@ const StackNavigator = createStackNavigator({
     screen: HomeTabs
   },
 }, {
-  initialRouteName: "HomeTabs",
+  initialRouteName: "RegisterScreen",
   defaultNavigationOptions: { headerShown: false },
   detachInactiveScreens: true,
 

@@ -8,7 +8,6 @@ import * as Yup from "yup";
 import Toast from "react-native-toast-message";
 import Background from "../component/Background";
 import { LinearGradient } from "expo-linear-gradient"
-import BackButton from "../component/BackButton";
 import { getStatusBarHeight } from 'react-native-status-bar-height'
 
 
@@ -27,12 +26,11 @@ const RegisterScreen = ({ navigation }) => {
         confirmPassword: Yup.string().required("Vui lòng nhập lại mật khẩu.")
     });
 
-    const onSignUpPressed = async (username, email, password) => {
-
+    const onSignUpPressed = async ({ email, username, password }) => {
         try {
             const signupResponse = await registerApi({
-                "username": username,
                 "email": email,
+                "username": username,
                 "password": password
             })
             const { data } = signupResponse
@@ -60,7 +58,11 @@ const RegisterScreen = ({ navigation }) => {
                 validationSchema={validation}
                 onSubmit={(values, { resetForm }) => {
                     // todo
-                    onSignUpPressed(values.email, values.password, values.username)
+                    onSignUpPressed({
+                        email: values.email,
+                        password: values.password,
+                        username: values.username
+                    })
                     resetForm()
                 }}>
                 {formikProps => (
