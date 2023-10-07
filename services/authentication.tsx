@@ -17,7 +17,7 @@ interface LogoutBody {
     password: string
 }
 
-export const registerApi = ({ username, password, email }: RegisterBody) => {
+export const registerApi = ({ username, email, password }: RegisterBody) => {
     const registerRequest = axios({
         method: "POST",
         url: registerUrl,
