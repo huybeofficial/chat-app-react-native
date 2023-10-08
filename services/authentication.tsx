@@ -1,10 +1,10 @@
 import axios from "axios"
 import * as SecureStore from 'expo-secure-store'
-import { registerUrl, loginUrl, logoutUrl } from "./api"
+import { registerUrl, loginUrl, logoutUrl, getUserInfoUrl } from "./api"
 
 interface RegisterBody {
-    email: string
     username: string
+    email: string
     password: string
 }
 
@@ -17,11 +17,11 @@ interface LogoutBody {
     password: string
 }
 
-export const registerApi = ({ email, username, password }: RegisterBody) => {
+export const registerApi = ({ username, password, email }: RegisterBody) => {
     const registerRequest = axios({
         method: "POST",
         url: registerUrl,
-        data: { email: email, username: username, password: password },
+        data: { username, email, password },
         headers: {
             'Content-Type': 'application/json'
         },
@@ -114,3 +114,27 @@ export const removeTokenFromAxios = () => {
         return Promise.reject(error);
     });
 }
+
+export const getUserInfo = async (id : any) => {
+    try {
+      const accessToken = await getAccessToken(); // Lấy accessToken từ SecureStore
+  
+      if (!accessToken) {
+        throw new Error("AccessToken không tồn tại"); // Xử lý trường hợp không có accessToken
+      }
+  
+      const url = getUserInfoUrl(id); // Tạo URL dựa trên userId
+      console.log(url)
+      const response = await axios.get(url, {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      return response.data; // Trả về thông tin người dùng (username và email)
+    } catch (error) {
+      throw error;
+    }
+  };
+  

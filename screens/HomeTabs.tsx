@@ -6,6 +6,7 @@ import ChatScreen from './ChatScreen';
 import FriendScreen from './FriendScreen';
 import SettingScreen from './SettingScreen';
 import Ionicons from '@expo/vector-icons/Ionicons'
+import UserProfileScreen from './UserProfileScreen';
 
 
 const Tab = createBottomTabNavigator();
@@ -51,7 +52,7 @@ const HomeTabs = () => {
                             )
                         }
                     }}></Tab.Screen>
-                <Tab.Screen name={"Setting"} component={SettingScreen}
+                <Tab.Screen name={"Setting"} component={UserProfileScreen}
                     options={{
                         tabBarIcon: ({ focused }: { focused: boolean }) => {
                             return (

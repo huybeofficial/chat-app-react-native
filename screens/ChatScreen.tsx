@@ -25,12 +25,6 @@ const ChatScreen = () => {
                         setSearch(search);
                     }}
                 />
-                <FlatList
-                    onRefresh={ }
-                    refreshing={ }
-                    style={styles.list}
-                    data={tasks}
-                    renderItem={(item) => renderTask(item)} />
             </View>
             <StatusBar style="dark" />
         </SafeAreaView>
