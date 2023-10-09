@@ -6,7 +6,7 @@ import ChatScreen from './ChatScreen';
 import FriendScreen from './FriendScreen';
 import SettingScreen from './SettingScreen';
 import Ionicons from '@expo/vector-icons/Ionicons'
-import UserProfileScreen from './UserProfileScreen';
+import UserProfileScreen from './userScreens/UserProfileScreen';
 
 
 const Tab = createBottomTabNavigator();

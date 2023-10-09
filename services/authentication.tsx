@@ -1,14 +1,26 @@
 import axios from "axios"
 import * as SecureStore from 'expo-secure-store'
-import { registerUrl, loginUrl, logoutUrl, getUserInfoUrl } from "./api"
+import { registerUrl, loginUrl, logoutUrl, getUserInfoUrl, listConversationUrl } from "./api"
+
+export interface Conversation {
+    name: string,
+    textMessage: string,
+    avatar: string
+}
+
 
 interface RegisterBody {
     username: string
     email: string
     password: string
 }
+export interface User {
+    username: string,
+    email: string,
+    password: string
+}
 
-interface LoginBody {
+export interface LoginBody {
     email: string
     password: string
 }
@@ -47,6 +59,13 @@ export const logoutApi = ({ email, password }: LogoutBody) => {
         headers: {
             'Content-Type': 'application/json'
         },
+    })
+}
+
+export const getConversationApi = () => {
+    return axios({
+        method: "GET",
+        url: 'https://65219161a4199548356d60b0.mockapi.io/conversation'
     })
 }
 
@@ -115,26 +134,5 @@ export const removeTokenFromAxios = () => {
     });
 }
 
-export const getUserInfo = async (id : any) => {
-    try {
-      const accessToken = await getAccessToken(); // Lấy accessToken từ SecureStore
-  
-      if (!accessToken) {
-        throw new Error("AccessToken không tồn tại"); // Xử lý trường hợp không có accessToken
-      }
-  
-      const url = getUserInfoUrl(id); // Tạo URL dựa trên userId
-      console.log(url)
-      const response = await axios.get(url, {
-        headers: {
-          'Authorization': `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
-      });
-  
-      return response.data; // Trả về thông tin người dùng (username và email)
-    } catch (error) {
-      throw error;
-    }
-  };
-  
+
+
