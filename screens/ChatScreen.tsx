@@ -2,25 +2,33 @@ import { Image, StyleSheet, Text, View, TextInput, SafeAreaView, Dimensions, Fla
 import React, { useState, useEffect } from 'react'
 import { Entypo } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
-import { Conversation, getConversationApi } from '../services/authentication'
+import { getAllConversationApi } from '../services/ChatService'
+import { getUserDataApi } from '../services/UserService'
 
 const windownWidth = Dimensions.get('window').width
 const windownHeight = Dimensions.get('window').height
 
-const ChatScreen = ({ navigation }) => {
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [conversation, setConversation] = useState<Conversation[]>([]);
-    const [textSearch, setTextSearch] = useState<string>("");
-    const [dataSearch, setDataSearch] = useState<Conversation[]>([]);
+const ChatScreen = ({ navigation, route }: any) => {
+    const { userData } = route.params
 
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [conversation, setConversation] = useState([]);
+    const [textSearch, setTextSearch] = useState<string>("");
+    const [dataSearch, setDataSearch] = useState([]);
+  
+    // const getUserData = async () => {
+    //     const res = await getUserDataApi();
+    //     setUserData(res.data?.user)
+    // }
     const getConversation = async () => {
         setIsLoading(true);
         try {
-            const listData = await getConversationApi();
+            const listData = await getAllConversationApi();
             const { data } = listData;
+            console.log(data)
             setConversation(data);
         } catch (error) {
-            alert(error.response);
+            alert(error);
         }
         setIsLoading(false);
     };
@@ -28,17 +36,19 @@ const ChatScreen = ({ navigation }) => {
     const renderConversationItem = ({ item }) => {
         return (
             <TouchableOpacity style={styles.getConversation} onPress={() => {
-                navigation.navigate('MessageScreen');
+                navigation.navigate('MessageScreen', {
+                    conversationId: item._id
+                });
             }}>
-                <Text style={{ fontSize: 15 }}>{item.name}</Text>
-                <Text style={{ fontSize: 13, color: "gray" }}>{item.textMessage}</Text>
+                <Text style={{ fontSize: 15 }}>{item.members[1].username}</Text>
+                <Text style={{ fontSize: 13, color: "gray" }}>{item?.textMessage}</Text>
             </TouchableOpacity>
         );
     }
 
     const handleSearch = (searchText: string) => {
         const filteredConversation = conversation.filter((item) =>
-            item.name.toLowerCase().includes(searchText.toLowerCase())
+            item?.username.toLowerCase().includes(searchText.toLowerCase())
         );
         setDataSearch(filteredConversation);
     };

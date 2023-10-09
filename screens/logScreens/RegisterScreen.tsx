@@ -1,14 +1,15 @@
 import React, { useState } from "react"
 import { Image, View, StyleSheet, Text, TextInput, TouchableOpacity, Platform } from "react-native"
-import { registerApi } from '../services/authentication'
+
 import Ionicons from '@expo/vector-icons/Ionicons'
 
 import Toast from "react-native-toast-message";
-import Background from "../component/Background";
+import Background from "../../component/Background";
 import { LinearGradient } from "expo-linear-gradient"
 import { getStatusBarHeight } from 'react-native-status-bar-height'
-import { showToast } from "../component/showToast";
-import { validateEmail } from "../utils/validate";
+import { showToast } from "../../component/showToast";
+import { validateEmail } from "../../utils/validate";
+import { registerApi } from "../../services/AuthService";
 
 
 const RegisterScreen = ({ navigation }) => {
@@ -68,7 +69,7 @@ const RegisterScreen = ({ navigation }) => {
                 })
                 const { data } = signupResponse
                 console.log("------------------------", data)
-                showToast("success", "Đăng ký thành công!", "")
+                showToast("success", "Đăng ký thành công!")
 
                 setTimeout(() => {
                     navigation.replace("LoginScreen")
@@ -76,10 +77,10 @@ const RegisterScreen = ({ navigation }) => {
             } catch (err) {
                 const { data } = err.response
                 console.log("------------------------", data)
-                showToast("error", "Email đã tồn tại!", "")
+                showToast("error", "Email đã tồn tại!")
             }
         } else {
-            showToast("error", "Vui lòng nhập đủ thông tin!", "")
+            showToast("error", "Vui lòng nhập đủ thông tin!")
         }
     };
     return (
@@ -89,7 +90,7 @@ const RegisterScreen = ({ navigation }) => {
             }} style={styles.container}>
                 <Image
                     style={styles.image}
-                    source={require('../assets/img/arrow_back.png')}
+                    source={require('../../assets/img/arrow_back.png')}
                 />
             </TouchableOpacity>
 
